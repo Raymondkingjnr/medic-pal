@@ -1,6 +1,10 @@
-import "../global.css";
 import { Slot } from "expo-router";
+import AuthProvider from "@/app/provider/Provider";
 
-export default function Layout() {
-  return <Slot />;
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <Slot />
+    </AuthProvider>
+  );
 }
