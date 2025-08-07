@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Spartan_700Bold",
     textAlign: "center",
+    paddingHorizontal: 10,
   },
   relativeform: {
     position: "relative",

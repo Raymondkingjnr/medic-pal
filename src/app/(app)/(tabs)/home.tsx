@@ -18,6 +18,8 @@ import { carouselData, categories } from "@/constants/data";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import Animated from "react-native-reanimated";
 import { router } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Spartan_700Bold } from "@expo-google-fonts/spartan";
 
 const hospitalData = [
   {
@@ -78,14 +80,7 @@ const Home = () => {
           <Text style={styles.name}>
             {profile ? `Welcome, ${profile?.full_name}` : ""}
           </Text>
-          <EvilIcons
-            name="bell"
-            size={35}
-            color="black"
-            style={{
-              fontWeight: "700",
-            }}
-          />
+          <Ionicons name="notifications-sharp" size={25} />
         </View>
 
         <View style={styles.relativeform}>
@@ -103,6 +98,31 @@ const Home = () => {
           />
         </View>
 
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 14,
+            gap: 10,
+          }}
+        >
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => router.push("/diagnosis")}
+          >
+            <Text style={styles.innerText}>Perform Diagnosis</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.btn, styles.docBtn]}
+            onPress={() => router.push("/doctors")}
+          >
+            <Text style={[styles.innerText, styles.innerTextDoc]}>
+              Registered Doctors
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.category}>
           <View
             style={{
@@ -113,10 +133,16 @@ const Home = () => {
             }}
             className="flex-row justify-between items-center"
           >
-            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
+            <Text
+              style={{
+                fontFamily: "Spartan_700Bold",
+                fontSize: 17,
+                color: "#757575ede",
+              }}
+            >
               Categories
             </Text>
-            <TouchableOpacity onPress={() => router.push("/doctors")}>
+            {/* <TouchableOpacity onPress={() => router.push("/doctors")}>
               <Text
                 style={{
                   fontFamily: "Spartan_600SemiBold",
@@ -126,7 +152,7 @@ const Home = () => {
               >
                 See All
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View>
             <FlatList
@@ -172,7 +198,13 @@ const Home = () => {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
+            <Text
+              style={{
+                fontFamily: "Spartan_700Bold",
+                fontSize: 17,
+                color: "#757575ede",
+              }}
+            >
               Nearby Medical Centers
             </Text>
             <Text
@@ -287,10 +319,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginTop: 20,
   },
-  categories: {
-    fontWeight: "700",
-    fontFamily: "Spartan_600SemiBold",
-    fontSize: 18,
+  btn: {
+    backgroundColor: "#1C2A3A",
+    borderRadius: 15,
+    paddingVertical: 17,
+    marginVertical: 10,
+    width: 170,
+  },
+  innerText: {
+    fontFamily: "Spartan_700Bold",
+    fontSize: 14,
+    textAlign: "center",
+    color: "#fff",
+  },
+  docBtn: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#000",
+  },
+  innerTextDoc: {
+    color: "#000",
   },
 });
 

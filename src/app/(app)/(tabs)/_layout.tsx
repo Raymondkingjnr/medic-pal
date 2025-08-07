@@ -1,9 +1,6 @@
 import React from "react";
 import { Stack, Tabs } from "expo-router";
-import Feather from "@expo/vector-icons/Feather";
-import Entypo from "@expo/vector-icons/Entypo";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Layout = () => {
   return (
@@ -33,8 +30,8 @@ const Layout = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <Feather
-              name="home"
+            <Ionicons
+              name="home-sharp"
               color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
               size={20}
             />
@@ -47,8 +44,8 @@ const Layout = () => {
           title: "location",
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <Entypo
-              name="location"
+            <Ionicons
+              name="location-sharp"
               color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
               size={20}
             />
@@ -61,8 +58,8 @@ const Layout = () => {
           title: "book",
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome
-              name="calendar"
+            <Ionicons
+              name="calendar-sharp"
               color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
               size={20}
             />
@@ -75,8 +72,8 @@ const Layout = () => {
           title: "profile",
           headerShown: false,
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome5
-              name="user"
+            <Ionicons
+              name="person-sharp"
               color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
               size={20}
             />

@@ -7,16 +7,23 @@ import {
   ScrollView,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
 import { DemoDoctors, demoReviews } from "@/constants/data";
 import DoctorCard from "@/components/doctor-card";
 import ReviewCard from "@/components/review-card";
+import DoctorModal from "@/components/doctor-modal";
 
 const DoctorDetails = () => {
+  const [showAppoinmentModal, setShowAppointmentModal] = useState(false);
+
   const { id } = useLocalSearchParams<{ id: string }>();
   const doctor = DemoDoctors.find((doc) => doc.id === Number(id));
+
+  const bookAnAppointment = () => {
+    setShowAppointmentModal(true);
+  };
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
@@ -28,7 +35,7 @@ const DoctorDetails = () => {
         </View>
         <View style={styles.docDet}>
           <DoctorCard Items={doctor} />
-          <TouchableOpacity style={styles.bookbtn}>
+          <TouchableOpacity style={styles.bookbtn} onPress={bookAnAppointment}>
             <Text
               style={{
                 color: "#fff",
@@ -155,6 +162,11 @@ const DoctorDetails = () => {
           />
         </View>
       </ScrollView>
+
+      <DoctorModal
+        visible={showAppoinmentModal}
+        close={() => setShowAppointmentModal(false)}
+      />
     </SafeAreaView>
   );
 };
