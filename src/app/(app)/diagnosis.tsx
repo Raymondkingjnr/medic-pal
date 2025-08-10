@@ -115,7 +115,6 @@ const Diagnosis = () => {
     </SafeAreaView>
   );
 };
-
 export default Diagnosis;
 
 const styles = StyleSheet.create({

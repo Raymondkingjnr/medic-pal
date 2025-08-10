@@ -105,6 +105,21 @@ const Profile = () => {
             </View>
             <Ionicons name="chevron-forward-sharp" size={20} />
           </TouchableOpacity>
+
+          {!profile.is_doctor && (
+            <TouchableOpacity
+              style={styles.quickLinks}
+              onPress={() => router.push("/doctor-reg")}
+            >
+              <View style={styles.flex}>
+                <View style={styles.icon}>
+                  <Ionicons name="medical-sharp" size={20} />
+                </View>
+                <Text style={styles.textStyle}>Register As a doctor</Text>
+              </View>
+              <Ionicons name="chevron-forward-sharp" size={20} />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity style={styles.quickLinks}>
             <View style={styles.flex}>
               <View style={styles.icon}>
