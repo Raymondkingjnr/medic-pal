@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect } from "react";
 import { icons } from "@/constants/icons";
@@ -114,11 +116,11 @@ const Login = () => {
     return null;
   }
   return (
-    <SafeAreaView className=" flex-1">
-      <ScrollView>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+    <SafeAreaView>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView>
           <View style={styles.container}>
             <Image source={icons.icon} />
             <Text style={styles.headertext}>
@@ -169,15 +171,17 @@ const Login = () => {
                 />
               )}
             </View>
-            <Pressable
+            <TouchableOpacity
               style={styles.button}
               disabled={isLoading}
               onPress={() => signinwithemail()}
             >
-              <Text style={styles.buttonText}>
-                {isLoading ? "Loading..." : " Sign In"}
-              </Text>
-            </Pressable>
+              {isLoading ? (
+                <ActivityIndicator size={20} />
+              ) : (
+                <Text style={styles.buttonText}>Sign In</Text>
+              )}
+            </TouchableOpacity>
             <View style={styles.flex}>
               <View style={styles.rltline} />
               <Text>Or</Text>
@@ -199,8 +203,8 @@ const Login = () => {
               </Pressable>
             </Link>
           </View>
-        </KeyboardAvoidingView>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -213,7 +217,6 @@ const styles = StyleSheet.create({
     alignContent: "center",
     alignItems: "center",
     marginTop: 80,
-    flex: 1,
   },
   headertext: {
     textAlign: "center",

@@ -11,6 +11,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { icons } from "@/constants/icons";
@@ -163,15 +165,17 @@ const Signup = () => {
               )}
             </View>
 
-            <Pressable
+            <TouchableOpacity
               style={[styles.button, isLoading && styles.buttonDisabled]}
               onPress={() => signupwithemail()}
               disabled={isLoading}
             >
-              <Text style={styles.buttonText}>
-                {isLoading ? "Creating Account..." : "Create Account"}
-              </Text>
-            </Pressable>
+              {isLoading ? (
+                <ActivityIndicator size={20} />
+              ) : (
+                <Text style={styles.buttonText}>Create Account</Text>
+              )}
+            </TouchableOpacity>
 
             <View style={styles.flex}>
               <View style={styles.rltline} />

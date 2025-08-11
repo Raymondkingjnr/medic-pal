@@ -6,24 +6,57 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, useLocalSearchParams } from "expo-router";
-import { DemoDoctors, demoReviews } from "@/constants/data";
+import { demoReviews } from "@/constants/data";
 import DoctorCard from "@/components/doctor-card";
 import ReviewCard from "@/components/review-card";
-import DoctorModal from "@/components/doctor-modal";
+import { supabase } from "@/lib/supabase";
 
 const DoctorDetails = () => {
-  const [showAppoinmentModal, setShowAppointmentModal] = useState(false);
-
   const { id } = useLocalSearchParams<{ id: string }>();
-  const doctor = DemoDoctors.find((doc) => doc.id === Number(id));
+  const [doctor, setDoctor] = useState<IDoctors | null>(null);
 
-  const bookAnAppointment = () => {
-    setShowAppointmentModal(true);
-  };
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      if (!id) return; // Ensure id is present
+
+      const { data, error } = await supabase
+        .from("doctors")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching doctor:", error);
+        return;
+      }
+
+      setDoctor(data as IDoctors);
+    };
+
+    fetchDoctor();
+  }, [id]);
+
+  if (!doctor) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 40,
+          }}
+        >
+          <ActivityIndicator size={50} color={"#000"} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
@@ -31,11 +64,19 @@ const DoctorDetails = () => {
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={25} />
           </TouchableOpacity>
-          <Text style={styles.HeaderText}>{doctor.name}</Text>
+          <Text style={styles.HeaderText}>{doctor?.name ?? ""}</Text>
         </View>
         <View style={styles.docDet}>
           <DoctorCard Items={doctor} />
-          <TouchableOpacity style={styles.bookbtn} onPress={bookAnAppointment}>
+          <TouchableOpacity
+            style={styles.bookbtn}
+            onPress={() =>
+              router.push({
+                pathname: "/appointment-booking",
+                params: { docId: id },
+              })
+            }
+          >
             <Text
               style={{
                 color: "#fff",
@@ -63,21 +104,25 @@ const DoctorDetails = () => {
                   size={40}
                 />
               </View>
-              <Text style={styles.allText}>2000+</Text>
+              <Text style={styles.allText}>
+                {doctor?.appointments.length ?? 0}
+              </Text>
               <Text style={styles.allText}>Patients</Text>
             </View>
             <View>
               <View style={styles.iconCover}>
                 <Ionicons name="trophy-sharp" color={"#1C2A3A"} size={40} />
               </View>
-              <Text style={styles.allText}>10+</Text>
+              <Text style={styles.allText}>
+                {doctor?.years_of_experiance ?? 0}+
+              </Text>
               <Text style={styles.allText}>Experience</Text>
             </View>
             <View>
               <View style={styles.iconCover}>
                 <Ionicons name="star-sharp" color={"#1C2A3A"} size={40} />
               </View>
-              <Text style={styles.allText}>4.5</Text>
+              <Text style={styles.allText}>{doctor?.rating ?? 0}</Text>
               <Text style={styles.allText}>Rating</Text>
             </View>
             <View>
@@ -88,7 +133,7 @@ const DoctorDetails = () => {
                   size={40}
                 />
               </View>
-              <Text style={styles.allText}>20+</Text>
+              <Text style={styles.allText}>{doctor?.reviews}</Text>
               <Text style={styles.allText}>Reviews</Text>
             </View>
           </View>
@@ -162,11 +207,6 @@ const DoctorDetails = () => {
           />
         </View>
       </ScrollView>
-
-      <DoctorModal
-        visible={showAppoinmentModal}
-        close={() => setShowAppointmentModal(false)}
-      />
     </SafeAreaView>
   );
 };

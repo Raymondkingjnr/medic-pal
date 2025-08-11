@@ -1,6 +1,7 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React, { FC } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { images } from "@/constants/images";
 
 interface IDoctorProps {
   Items: IDoctors;
@@ -11,7 +12,7 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onClick}>
       <View>
-        <Image source={Items.image} style={styles.image} />
+        <Image source={images.profilePic} style={styles.image} />
       </View>
       <View>
         <View
@@ -22,10 +23,13 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
             width: 210,
           }}
         >
-          <Text style={styles.docName}>{Items.name}</Text>
+          <Text style={styles.docName}>
+            Dr. {""}
+            {Items.name}
+          </Text>
           <Ionicons name="heart-outline" size={22} />
         </View>
-        <Text style={styles.docSpec}>{Items.specialization}</Text>
+        <Text style={styles.docSpec}>{Items.medical_field}</Text>
         <View
           style={[
             {
@@ -37,7 +41,9 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
           ]}
         >
           <Ionicons name="location-outline" size={15} />
-          <Text style={styles.docLocoText}>{Items.location}</Text>
+          <Text style={styles.docLocoText}>{Items.location.address}</Text>
+          <Text style={styles.docLocoText}>{Items.location.country}</Text>
+          <Text style={styles.docLocoText}>{Items.location.state}</Text>
         </View>
         <View
           style={[
@@ -92,6 +98,8 @@ const styles = StyleSheet.create({
   },
   image: {
     objectFit: "cover",
+    width: 100,
+    height: 100,
   },
   docName: {
     fontFamily: "Spartan_800ExtraBold",

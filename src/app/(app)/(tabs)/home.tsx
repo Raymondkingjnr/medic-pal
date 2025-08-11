@@ -41,7 +41,7 @@ const hospitalData = [
     image: images.hospital_3,
     title: "sunrise clinic",
     location: "123 Oak Street, CA 98765.",
-    km: "2.5 km/40min",
+    km: "2.5 km/40mins",
   },
 ];
 

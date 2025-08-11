@@ -7,16 +7,32 @@ import {
   TextInput,
   FlatList,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
-import { categories, DemoDoctors } from "@/constants/data";
 
 import DoctorCard from "@/components/doctor-card";
-
-const categoryName = ["All", ...categories.map((names) => names.name)];
+import { supabase } from "@/lib/supabase";
 
 const Doctors = () => {
+  const [doctors, setDoctors] = useState<IDoctors[]>([]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      const { data, error } = await supabase.from("doctors").select("*");
+
+      if (error) {
+        console.error("Error fetching doctors:", error);
+        return;
+      }
+
+      setDoctors(data);
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const categoryName = ["All", ...doctors.map((names) => names.medical_field)];
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.flexTop}>
@@ -53,11 +69,11 @@ const Doctors = () => {
       </View>
       <View style={styles.doctorsFound}>
         <Text style={[styles.tabText, styles.doctorsFoundText]}>
-          300 Doctors Found
+          {doctors.length}
         </Text>
 
         <FlatList
-          data={DemoDoctors}
+          data={doctors}
           keyExtractor={(item) => item.id.toLocaleString()}
           contentContainerStyle={{ gap: 10 }}
           renderItem={({ item }) => (
@@ -142,5 +158,7 @@ const styles = StyleSheet.create({
   },
   doctorsFoundText: {
     fontFamily: "Spartan_800ExtraBold",
+    paddingHorizontal: 15,
+    fontSize: 20,
   },
 });
