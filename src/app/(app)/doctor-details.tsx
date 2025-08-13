@@ -10,15 +10,17 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { demoReviews } from "@/constants/data";
 import DoctorCard from "@/components/doctor-card";
 import ReviewCard from "@/components/review-card";
 import { supabase } from "@/lib/supabase";
+import Custombtn from "@/components/custombtn";
 
 const DoctorDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [doctor, setDoctor] = useState<IDoctors | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchDoctor = async () => {
@@ -68,26 +70,11 @@ const DoctorDetails = () => {
         </View>
         <View style={styles.docDet}>
           <DoctorCard Items={doctor} />
-          <TouchableOpacity
-            style={styles.bookbtn}
-            onPress={() =>
-              router.push({
-                pathname: "/appointment-booking",
-                params: { docId: id },
-              })
-            }
-          >
-            <Text
-              style={{
-                color: "#fff",
-                fontFamily: "Spartan_600SemiBold",
-                textAlign: "center",
-                fontSize: 18,
-              }}
-            >
-              Book An Appointment
-            </Text>
-          </TouchableOpacity>
+
+          <Custombtn
+            text="Book An Appointment"
+            onClick={() => router.push(`/appointment-booking?id=${id}`)}
+          />
           <View
             style={{
               flexDirection: "row",
@@ -100,27 +87,27 @@ const DoctorDetails = () => {
               <View style={styles.iconCover}>
                 <Ionicons
                   name="people-circle-sharp"
-                  color={"#1C2A3A"}
+                  color={"#085be2"}
                   size={40}
                 />
               </View>
               <Text style={styles.allText}>
                 {doctor?.appointments.length ?? 0}
               </Text>
-              <Text style={styles.allText}>Patients</Text>
+              <Text style={styles.allText}>Patiants</Text>
             </View>
             <View>
               <View style={styles.iconCover}>
-                <Ionicons name="trophy-sharp" color={"#1C2A3A"} size={40} />
+                <Ionicons name="trophy-sharp" color={"#085be2"} size={40} />
               </View>
               <Text style={styles.allText}>
-                {doctor?.years_of_experiance ?? 0}+
+                {doctor?.years_experience ?? 0}+
               </Text>
               <Text style={styles.allText}>Experience</Text>
             </View>
             <View>
               <View style={styles.iconCover}>
-                <Ionicons name="star-sharp" color={"#1C2A3A"} size={40} />
+                <Ionicons name="star-sharp" color={"#085be2"} size={40} />
               </View>
               <Text style={styles.allText}>{doctor?.rating ?? 0}</Text>
               <Text style={styles.allText}>Rating</Text>
@@ -129,7 +116,7 @@ const DoctorDetails = () => {
               <View style={styles.iconCover}>
                 <Ionicons
                   name="mail-unread-sharp"
-                  color={"#1C2A3A"}
+                  color={"#085be2"}
                   size={40}
                 />
               </View>
@@ -150,11 +137,7 @@ const DoctorDetails = () => {
                 color: "#6B7280",
               }}
             >
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque
-              possimus qui fugit autem, perferendis quis vitae id animi
-              assumenda repellendus iste beatae quae eos placeat praesentium
-              obcaecati incidunt hic quos soluta et alias, facilis ex tempora
-              reprehenderit. Ipsam, voluptas ea?
+              {doctor.about_me}
             </Text>
           </View>
 
@@ -238,12 +221,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     paddingHorizontal: 10,
   },
-  bookbtn: {
-    backgroundColor: "#1C2A3A",
-    borderRadius: 15,
-    paddingVertical: 17,
-    marginVertical: 10,
-  },
+
   iconCover: {
     flexDirection: "row",
     justifyContent: "center",
@@ -251,7 +229,7 @@ const styles = StyleSheet.create({
     height: 60,
     width: 60,
     borderRadius: 9999,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: "#ecf2fb",
     marginBottom: 6,
   },
   allText: {

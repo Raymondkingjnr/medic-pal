@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import React, { useEffect } from "react";
 import { icons } from "@/constants/icons";
-import { Link, router } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import {
@@ -28,6 +28,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useLocalSearchParams } from "expo-router";
 import { UserAppMetadata } from "@supabase/supabase-js";
+import Custombtn from "@/components/custombtn";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -35,6 +37,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserAppMetadata | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+
+  const router = useRouter();
 
   const params = useLocalSearchParams();
   const passedName = typeof params.name === "string" ? params.name : undefined;
@@ -139,7 +143,12 @@ const Login = () => {
                 value={email}
                 onChangeText={(text) => setEmail(text)}
               />
-              <Entypo name="mail" style={styles.icon} size={15} color="black" />
+              <Ionicons
+                name="mail-outline"
+                style={styles.icon}
+                size={15}
+                color="black"
+              />
             </View>
             <View style={styles.relativeform}>
               <TextInput
@@ -152,18 +161,23 @@ const Login = () => {
                 onChangeText={(text) => setPassword(text)}
               />
 
-              <Entypo style={styles.icon} name="lock" size={15} color="#000" />
+              <Ionicons
+                style={styles.icon}
+                name="lock-closed-outline"
+                size={15}
+                color="#000"
+              />
               {!showPassword ? (
-                <Entypo
-                  name="eye-with-line"
+                <Ionicons
+                  name="eye-off-outline"
                   style={styles.password}
                   size={25}
                   color="black"
                   onPress={() => setShowPassword((prev) => !prev)}
                 />
               ) : (
-                <Entypo
-                  name="eye"
+                <Ionicons
+                  name="eye-outline"
                   style={styles.password}
                   size={25}
                   color="black"
@@ -171,17 +185,13 @@ const Login = () => {
                 />
               )}
             </View>
-            <TouchableOpacity
-              style={styles.button}
-              disabled={isLoading}
-              onPress={() => signinwithemail()}
-            >
-              {isLoading ? (
-                <ActivityIndicator size={20} />
-              ) : (
-                <Text style={styles.buttonText}>Sign In</Text>
-              )}
-            </TouchableOpacity>
+
+            <Custombtn
+              text="Sign In"
+              isLoading={isLoading}
+              onClick={() => signinwithemail()}
+              customStyle={styles.button}
+            />
             <View style={styles.flex}>
               <View style={styles.rltline} />
               <Text>Or</Text>
@@ -280,9 +290,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   button: {
-    backgroundColor: "#1C2A3A",
-    padding: 15,
-    borderRadius: 5,
     width: "100%",
     marginTop: 30,
   },

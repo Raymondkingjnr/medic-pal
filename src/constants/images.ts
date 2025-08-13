@@ -18,7 +18,8 @@ import miniimage1 from "@/assets/images/mini-image1.png";
 import miniimage2 from "@/assets/images/mini-image2.png";
 import miniimage3 from "@/assets/images/mini-image3.png";
 import miniimage4 from "@/assets/images/mini-image4.png";
-import profilePic from "@/assets/images/profile-pic.png";
+// import profilePic from "@/assets/images/profile-pic.png";
+import profilePic from "@/assets/images/doc-avater.png";
 
 export const images = {
   dentistry,

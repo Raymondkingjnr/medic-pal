@@ -13,11 +13,13 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { images } from "@/constants/images";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 const Profile = () => {
   const [profile, setProfile] = useState<IProfile>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {

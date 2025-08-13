@@ -4,11 +4,15 @@ interface IDoctors {
   location: ILocation;
   rating: number;
   reviews: number;
-  years_of_experiance: number
+  years_experience: number
   // image: any;
   id: number;
   appointments: IAppointment[]
   reviews: []
+  about_me: string
+  verified: boolean;
+  top_doctor: boolean;
+  availability: boolean
 }
 
 interface ILocation {
@@ -19,7 +23,8 @@ interface IAppointment {
   id: string,
   status: string,
   client_id: string,
-  doctor_id: null,
+  doctor_id: IDoctors,
+  doctor_name?: string
   created_at: string,
   client_name: string,
   client_address: string,

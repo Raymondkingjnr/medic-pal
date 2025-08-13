@@ -1,54 +1,44 @@
 import {
   View,
   Text,
-  Image,
-  FlatList,
-  TextInput,
   ScrollView,
   ActivityIndicator,
   StatusBar,
   SafeAreaView,
   TouchableOpacity,
+  FlatList,
+  RefreshControl,
+  Image,
+  Alert,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { supabase } from "@/lib/supabase";
-import { images } from "@/constants/images";
-import { carouselData, categories } from "@/constants/data";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
-import Animated from "react-native-reanimated";
-import { router } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Spartan_700Bold } from "@expo-google-fonts/spartan";
 
-const hospitalData = [
-  {
-    id: 1,
-    image: images.hospital_1,
-    title: "sunrise clinic",
-    location: "123 Oak Street, CA 98765.",
-    km: "2.5 km/40min",
-  },
-  {
-    id: 2,
-    image: images.hospital_2,
-    title: "Golden Cardiology Center",
-    location: "555 Bridge Street, Golden Gate.",
-    km: "2.5 km/40min",
-  },
-  {
-    id: 3,
-    image: images.hospital_3,
-    title: "sunrise clinic",
-    location: "123 Oak Street, CA 98765.",
-    km: "2.5 km/40mins",
-  },
-];
+import { useRouter } from "expo-router";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+import { Status } from "@/constants/enum";
+import AppointmentCard from "@/components/appointment-card";
+
+import Custombtn, { TranparentBtn } from "@/components/custombtn";
+import DoctorCard from "@/components/doctor-card";
+import { images } from "@/constants/images";
+import {
+  Spartan_600SemiBold,
+  Spartan_800ExtraBold,
+} from "@expo-google-fonts/spartan";
 
 const Home = () => {
   // const [user, setUser] = React.useState<User>();
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<IProfile>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [appointment, setAppointments] = useState<IAppointment[]>([]);
+
+  const [doctors, setDoctors] = useState<IDoctors[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -70,6 +60,166 @@ const Home = () => {
     fetchProfile();
   }, []);
 
+  const fetchAppointments = useCallback(async () => {
+    try {
+      const {
+        data: { user },
+        error: userErr,
+      } = await supabase.auth.getUser();
+
+      if (userErr || !user) {
+        console.warn("No user:", userErr);
+        setAppointments([]);
+
+        return;
+      }
+
+      // Check if user is a doctor (doctors.user_id = auth.uid())
+      const { data: doctorRow, error: doctorErr } = await supabase
+        .from("doctors")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (doctorErr) {
+        console.warn("doctor check error:", doctorErr);
+      }
+
+      // Build the base query: include nested doctor object
+      // We alias the joined doctors row as "doctor" so it comes back as `doctor`
+      let query = supabase
+        .from("appointments")
+        .select("*, doctor:doctors(*)")
+        .limit(1)
+        .eq("status", Status.UPCOMING)
+        .order("appointment_date", { ascending: true })
+        .order("appointment_time", { ascending: true });
+
+      // If user is a doctor, fetch both appointments where they are the doctor OR where they are the client
+      if (doctorRow && doctorRow.id) {
+        query = query.or(
+          `client_id.eq.${user.id},doctor_id.eq.${doctorRow.id}`
+        );
+      } else {
+        // just the client's appointments
+        query = query.eq("client_id", user.id);
+      }
+
+      // Apply status filter if not "All"
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("fetch appointments error:", error);
+        setAppointments([]);
+        return;
+      }
+
+      // Map the returned structure so that appointment.doctor_id is the doctor object
+      // Supabase returns the joined table under the alias 'doctor'
+      const mapped = (data || []).map((a: any) => {
+        const copy: any = { ...a };
+
+        if (copy.doctor) {
+          // doctor could be an array or object depending on FK relation; normalize to object
+          if (Array.isArray(copy.doctor)) {
+            copy.doctor_id = copy.doctor[0] ?? copy.doctor_id;
+          } else {
+            copy.doctor_id = copy.doctor;
+          }
+          delete copy.doctor;
+        }
+
+        // If doctor_id is still a raw uuid string, leave it as is.
+        return copy as IAppointment;
+      });
+
+      setAppointments(mapped);
+    } catch (err) {
+      console.error("unexpected fetch error:", err);
+      setAppointments([]);
+    } finally {
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
+
+  const fetchDoctors = useCallback(async () => {
+    setRefreshing(true);
+    const { data, error } = await supabase.from("doctors").select("*");
+    if (error) {
+      console.error("Error fetching doctors:", error);
+    } else {
+      setDoctors(data || []);
+    }
+    setRefreshing(false);
+  }, []);
+
+  useEffect(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
+
+  const onRefresh = useCallback(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
+
+  const handleCancel = async (appointment: IAppointment) => {
+    Alert.alert(
+      "Cancel appointment",
+      "Are you sure you want to cancel this appointment?",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            const { error } = await supabase
+              .from("appointments")
+              .update({ status: "cancelled" })
+              .eq("id", appointment.id);
+
+            if (error) {
+              Alert.alert("Error", error.message);
+            } else {
+              Alert.alert("Cancelled", "Appointment was cancelled.");
+              await fetchAppointments();
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+  const handleComplete = async (appointment: IAppointment) => {
+    Alert.alert(
+      "complete appointment",
+      "if you have seen you doctor press yes to make as complete",
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            const { error } = await supabase
+              .from("appointments")
+              .update({ status: Status.COMPLETED })
+              .eq("id", appointment.id);
+
+            if (error) {
+              Alert.alert("Error", error.message);
+            } else {
+              Alert.alert("Completed", "Appointment was Completed.");
+              await fetchAppointments();
+            }
+          },
+        },
+      ]
+      // { cancelable: true }
+    );
+  };
+
+  const firstAppointment = appointment[0];
+
   if (loadingProfile) return <ActivityIndicator style={{ flex: 1 }} />;
 
   return (
@@ -80,22 +230,90 @@ const Home = () => {
           <Text style={styles.name}>
             {profile ? `Welcome, ${profile?.full_name}` : ""}
           </Text>
-          <Ionicons name="notifications-sharp" size={25} />
+          <Ionicons name="notifications-sharp" color={"#175fd3"} size={25} />
         </View>
 
-        <View style={styles.relativeform}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search Doctor"
-            placeholderTextColor="#9CA3AF"
-            autoCapitalize={"none"}
-          />
-          <EvilIcons
-            style={styles.icon}
-            name="search"
-            size={30}
-            color="#D1D5DB"
-          />
+        <View
+          style={{
+            backgroundColor: "#3B82F6",
+            marginHorizontal: 10,
+            borderRadius: 14,
+            padding: 10,
+            marginTop: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: 10,
+              paddingVertical: 12,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Spartan_700Bold",
+                fontSize: 15,
+                color: "#fff",
+              }}
+            >
+              Upcoming Appointment
+            </Text>
+            <TouchableOpacity onPress={() => router.push("/book")}>
+              <Text
+                style={{
+                  fontFamily: "Spartan_700Bold",
+                  fontSize: 15,
+                  color: "#fff",
+                }}
+              >
+                View All
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View>
+            {firstAppointment ? (
+              <AppointmentCard
+                card={firstAppointment}
+                onCancle={() => handleCancel(firstAppointment)}
+                onComplete={() => handleComplete(firstAppointment)}
+                onReeschedule={() =>
+                  router.push(`/reschedule?id=${firstAppointment.id}`)
+                }
+              />
+            ) : (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 20,
+                  backgroundColor: "#fff",
+                  borderRadius: 20,
+                  width: "auto",
+                  paddingVertical: 15,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: "Spartan_600SemiBold",
+                    fontSize: 18,
+                    lineHeight: 30,
+                    paddingHorizontal: 30,
+                    textAlign: "center",
+                  }}
+                >
+                  You do not have any upcoming appointment
+                </Text>
+                <Custombtn
+                  text="Book an appointment"
+                  customStyle={styles.appointbtn}
+                  onClick={() => router.push("/doctors")}
+                />
+              </View>
+            )}
+          </View>
         </View>
 
         <View
@@ -104,23 +322,20 @@ const Home = () => {
             alignItems: "center",
             justifyContent: "space-between",
             paddingHorizontal: 14,
+            padding: 20,
             gap: 10,
           }}
         >
-          <TouchableOpacity
-            style={styles.btn}
-            onPress={() => router.push("/diagnosis")}
-          >
-            <Text style={styles.innerText}>Perform Diagnosis</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.btn, styles.docBtn]}
-            onPress={() => router.push("/doctors")}
-          >
-            <Text style={[styles.innerText, styles.innerTextDoc]}>
-              Registered Doctors
-            </Text>
-          </TouchableOpacity>
+          <Custombtn
+            text="Ask Ai"
+            customStyle={styles.width}
+            onClick={() => router.push("/diagnosis")}
+          />
+          <TranparentBtn
+            text="  Registered Doctors"
+            customStyle={styles.width}
+            onClick={() => router.push("/doctors")}
+          />
         </View>
 
         <View style={styles.category}>
@@ -131,7 +346,6 @@ const Home = () => {
               justifyContent: "space-between",
               alignItems: "center",
             }}
-            className="flex-row justify-between items-center"
           >
             <Text
               style={{
@@ -140,121 +354,138 @@ const Home = () => {
                 color: "#757575ede",
               }}
             >
-              Categories
+              Services
             </Text>
-            {/* <TouchableOpacity onPress={() => router.push("/doctors")}>
-              <Text
-                style={{
-                  fontFamily: "Spartan_600SemiBold",
-                  fontSize: 17,
-                  lineHeight: 23,
-                }}
-              >
-                See All
-              </Text>
-            </TouchableOpacity> */}
           </View>
-          <View>
-            <FlatList
-              data={categories}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={4}
-              columnWrapperStyle={{
-                justifyContent: "space-between",
-                gap: 10,
-                paddingBottom: 5,
-                marginTop: 15,
-              }}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <View
-                  style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Image source={item.image} style={{ marginBottom: 10 }} />
-                  <Text
-                    className=" truncate w-[100px]"
-                    style={[styles.text, styles.truncatText]}
-                  >
-                    {item.name.length > 10
-                      ? `${item.name.substring(0, 8)}...`
-                      : item.name}
-                  </Text>
-                </View>
-              )}
-            />
+
+          {/* Flex service */}
+
+          <View
+            style={{
+              flexDirection: "row",
+              gap: 10,
+              marginTop: 20,
+              justifyContent: "space-between",
+            }}
+          >
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => router.push("/book")}
+            >
+              <View style={styles.iconcover}>
+                <Ionicons name="calendar-sharp" size={21} color={"#3B82F6"} />
+              </View>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+                bookings
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => router.push("/doctors")}
+            >
+              <View style={styles.iconcover}>
+                <Ionicons name="medical-sharp" size={21} color={"#22C55E"} />
+              </View>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+                Doctors
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.serviceCard}
+              onPress={() => router.push("/profile")}
+            >
+              <View style={styles.iconcover}>
+                <Ionicons name="person-sharp" size={21} color={"#A855F7"} />
+              </View>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+                Profile
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.serviceCard}>
+              <View style={styles.iconcover}>
+                <Ionicons
+                  name="notifications-sharp"
+                  size={21}
+                  color={"#F97316"}
+                />
+              </View>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+                Reminders
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        <View style={{ paddingHorizontal: 16 }}>
-          <View
+        <View style={styles.docHeader}>
+          <Text
             style={{
-              paddingTop: 40,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+              fontFamily: "Spartan_700Bold",
+              fontSize: 17,
+              color: "#757575ede",
             }}
           >
-            <Text
-              style={{
-                fontFamily: "Spartan_700Bold",
-                fontSize: 17,
-                color: "#757575ede",
-              }}
-            >
-              Nearby Medical Centers
-            </Text>
-            <Text
-              style={{
-                fontFamily: "Spartan_600SemiBold",
-                fontSize: 17,
-                lineHeight: 23,
-              }}
-            >
-              See All
-            </Text>
-          </View>
-          <View>
-            <Animated.FlatList
-              data={hospitalData}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ gap: 15 }}
-              renderItem={({ item }) => (
-                <View
+            Top Doctors
+          </Text>
+        </View>
+        <View>
+          <FlatList
+            data={doctors}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: 15,
+              marginVertical: 6,
+              gap: 18,
+              marginBottom: 50,
+            }}
+            keyExtractor={(item) => item.id.toLocaleString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.topDoc}
+                onPress={() => router.push(`/doctor-details?id=${item.id}`)}
+              >
+                <Image
+                  source={images.profilePic}
                   style={{
-                    flexDirection: "column",
-
-                    marginTop: 10,
+                    objectFit: "contain",
+                    width: 60,
+                    height: 60,
+                    borderWidth: 1,
+                    borderRadius: 9999,
+                    borderColor: "#f0f0f0",
+                  }}
+                />
+                <Text
+                  style={{
+                    fontFamily: "Spartan_800ExtraBold",
+                    fontSize: 10,
+                    textAlign: "center",
                   }}
                 >
-                  <Image
-                    source={item.image}
-                    style={{
-                      width: 300,
-                      height: 170,
-                      objectFit: "cover",
-                      borderRadius: 7,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      fontFamily: "Spartan_600SemiBold",
-                      fontWeight: 600,
-                      paddingTop: 10,
-                      paddingBottom: 8,
-                    }}
-                  >
-                    {item.title}
-                  </Text>
-                </View>
-              )}
-            />
-          </View>
+                  Dr. {item.name}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: "Spartan_600SemiBold",
+                    fontSize: 14,
+                    paddingTop: 6,
+                  }}
+                >
+                  {item.medical_field}
+                </Text>
+              </TouchableOpacity>
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#3b82f6"]}
+                tintColor={"##3b82f6"}
+                title="pull to refresh doctors"
+                titleColor={"##3b7280"}
+              />
+            }
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -265,7 +496,6 @@ const styles = StyleSheet.create({
   home: {
     backgroundColor: "#FFFF",
     flex: 1,
-    paddingHorizontal: 17,
   },
   scroll: {
     flex: 1,
@@ -287,24 +517,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textTransform: "capitalize",
   },
-  input: {
-    color: "#1C2A3A",
-    fontFamily: "Spartan_600SemiBold",
-    borderColor: "#D1D5DB",
-    borderWidth: 1,
-    height: 45,
-    borderRadius: 7,
-    fontSize: 18,
-    paddingLeft: 40,
-    width: "100%",
-    fontWeight: "500",
+  appointbtn: {
+    width: 200,
   },
-  relativeform: {
-    position: "relative",
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    width: "100%",
-    marginTop: 20,
+  width: {
+    width: 160,
   },
   icon: {
     position: "absolute",
@@ -317,7 +534,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignContent: "center",
     paddingHorizontal: 10,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 12,
   },
   btn: {
     backgroundColor: "#1C2A3A",
@@ -326,19 +544,50 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     width: 170,
   },
-  innerText: {
-    fontFamily: "Spartan_700Bold",
-    fontSize: 14,
-    textAlign: "center",
-    color: "#fff",
+
+  serviceCard: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: "#fff",
+    shadowColor: "rgba(27, 27, 27, 0.35)",
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    elevation: 6, // for Android shadow
+    borderRadius: 10,
+    padding: 16,
+    width: 80,
   },
-  docBtn: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "#000",
+  iconcover: {
+    width: 35,
+    height: 35,
+    backgroundColor: "#f3f3f3",
+    borderRadius: 9999,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  innerTextDoc: {
-    color: "#000",
+  docHeader: {
+    paddingTop: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingBottom: 15,
+  },
+  topDoc: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    backgroundColor: "#fff",
+    shadowColor: "rgba(27, 27, 27, 0.35)",
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    shadowOpacity: 0.3,
+    elevation: 6, // for Android shadow
+    borderRadius: 10,
+    padding: 10,
+    width: 110,
   },
 });
 

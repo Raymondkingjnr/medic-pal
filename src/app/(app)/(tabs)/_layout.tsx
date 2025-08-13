@@ -32,7 +32,7 @@ const Layout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name="home-sharp"
-              color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
+              color={`${focused ? (color = "#1f5feb") : (color = "#9CA3AF")}`}
               size={20}
             />
           ),
@@ -46,7 +46,7 @@ const Layout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name="location-sharp"
-              color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
+              color={`${focused ? (color = "#1f5feb") : (color = "#9CA3AF")}`}
               size={20}
             />
           ),
@@ -60,7 +60,7 @@ const Layout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name="calendar-sharp"
-              color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
+              color={`${focused ? (color = "#1f5feb") : (color = "#9CA3AF")}`}
               size={20}
             />
           ),
@@ -74,7 +74,7 @@ const Layout = () => {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name="person-sharp"
-              color={`${focused ? (color = "#4B5563") : (color = "#9CA3AF")}`}
+              color={`${focused ? (color = "#1f5feb") : (color = "#9CA3AF")}`}
               size={20}
             />
           ),

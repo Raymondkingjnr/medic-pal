@@ -6,33 +6,42 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 import DoctorCard from "@/components/doctor-card";
 import { supabase } from "@/lib/supabase";
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState<IDoctors[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      const { data, error } = await supabase.from("doctors").select("*");
+  const router = useRouter();
 
-      if (error) {
-        console.error("Error fetching doctors:", error);
-        return;
-      }
-
-      setDoctors(data);
-    };
-
-    fetchDoctors();
+  const fetchDoctors = useCallback(async () => {
+    setRefreshing(true);
+    const { data, error } = await supabase.from("doctors").select("*");
+    if (error) {
+      console.error("Error fetching doctors:", error);
+    } else {
+      setDoctors(data || []);
+    }
+    setRefreshing(false);
   }, []);
 
+  useEffect(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
+
+  const onRefresh = useCallback(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
+
   const categoryName = ["All", ...doctors.map((names) => names.medical_field)];
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.flexTop}>
@@ -58,7 +67,7 @@ const Doctors = () => {
           contentContainerStyle={{
             paddingHorizontal: 15,
             marginVertical: 6,
-            gap: 2,
+            gap: 10,
           }}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.tabContainer}>
@@ -82,6 +91,16 @@ const Doctors = () => {
               onClick={() => router.push(`/doctor-details?id=${item.id}`)}
             />
           )}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#3b82f6"]}
+              tintColor={"##3b82f6"}
+              title="pull to refresh doctors"
+              titleColor={"##3b7280"}
+            />
+          }
         />
       </View>
     </SafeAreaView>
@@ -109,7 +128,7 @@ const styles = StyleSheet.create({
   tabContainer: {
     backgroundColor: "#ffff",
     paddingHorizontal: 10,
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     height: 36,
     borderWidth: 1,

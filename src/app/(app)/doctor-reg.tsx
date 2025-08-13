@@ -13,9 +13,10 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import * as Location from "expo-location";
+import Custombtn, { TranparentBtn } from "@/components/custombtn";
 
 const DoctorForm = () => {
   const [name, setName] = useState("");
@@ -24,6 +25,8 @@ const DoctorForm = () => {
   const [licenseNumber, setLicenseNumber] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const [profile, setProfile] = useState<IProfile>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -211,14 +214,12 @@ const DoctorForm = () => {
             </View>
 
             {/* LOCATION */}
-            <TouchableOpacity
-              style={styles.confirmbtn}
-              onPress={getCurrentLocation}
-            >
-              <Text style={styles.btnText}>
-                Click To Allow Location or Input Manually
-              </Text>
-            </TouchableOpacity>
+
+            <Custombtn
+              text=" Click To Allow Location or Input Manually"
+              onClick={getCurrentLocation}
+              customStyle={styles.confirmbtn}
+            />
             <TextInput
               placeholder="Address"
               placeholderTextColor={"#9f9f9f"}
@@ -247,16 +248,13 @@ const DoctorForm = () => {
               onChangeText={(v) => setLocation({ ...location, country: v })}
               style={styles.input}
             />
-            <TouchableOpacity
-              style={styles.confirmbtn}
-              onPress={registerDoctor}
-            >
-              {loading ? (
-                <ActivityIndicator size={20} />
-              ) : (
-                <Text style={styles.btnText}>Submit</Text>
-              )}
-            </TouchableOpacity>
+
+            <TranparentBtn
+              text="Submit"
+              isLoading={loading}
+              onClick={registerDoctor}
+              customStyle={styles.confirmbtn}
+            />
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
@@ -309,21 +307,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   confirmbtn: {
-    backgroundColor: "#1C2A3A",
-    borderRadius: 15,
-    paddingVertical: 17,
+    width: "100%",
     marginVertical: 10,
-  },
-  Transconfirmbtn: {
-    backgroundColor: "transparent",
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "#000",
-  },
-  btnText: {
-    fontFamily: "Spartan_700Bold",
-    fontSize: 14,
-    textAlign: "center",
-    color: "#fff",
   },
 });

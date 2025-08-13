@@ -20,16 +20,16 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            width: 210,
+            width: 245,
           }}
         >
-          <Text style={styles.docName}>
+          <Text style={styles?.docName}>
             Dr. {""}
             {Items.name}
           </Text>
           <Ionicons name="heart-outline" size={22} />
         </View>
-        <Text style={styles.docSpec}>{Items.medical_field}</Text>
+        <Text style={styles.docSpec}>{Items?.medical_field}</Text>
         <View
           style={[
             {
@@ -42,8 +42,8 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
         >
           <Ionicons name="location-outline" size={15} />
           <Text style={styles.docLocoText}>{Items.location.address}</Text>
-          <Text style={styles.docLocoText}>{Items.location.country}</Text>
           <Text style={styles.docLocoText}>{Items.location.state}</Text>
+          {/* <Text style={styles.docLocoText}>{Items.location.country}</Text> */}
         </View>
         <View
           style={[
@@ -97,9 +97,12 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   image: {
-    objectFit: "cover",
-    width: 100,
-    height: 100,
+    objectFit: "contain",
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+    borderColor: "#f0f0f0",
+    borderWidth: 1,
   },
   docName: {
     fontFamily: "Spartan_800ExtraBold",
