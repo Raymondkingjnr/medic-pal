@@ -8,7 +8,7 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 
@@ -19,8 +19,10 @@ const Doctors = () => {
   const [doctors, setDoctors] = useState<IDoctors[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const router = useRouter();
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
+  const router = useRouter();
   const fetchDoctors = useCallback(async () => {
     setRefreshing(true);
     const { data, error } = await supabase.from("doctors").select("*");
@@ -40,7 +42,27 @@ const Doctors = () => {
     fetchDoctors();
   }, [fetchDoctors]);
 
-  const categoryName = ["All", ...doctors.map((names) => names.medical_field)];
+  /** Get category list without duplicates */
+  const categories = useMemo(() => {
+    const uniqueFields = Array.from(
+      new Set(doctors.map((doc) => doc.medical_field))
+    );
+    return ["All", ...uniqueFields];
+  }, [doctors]);
+
+  /** Filtered doctors based on category + search */
+  const filteredDoctors = useMemo(() => {
+    return doctors.filter((doc) => {
+      const matchesCategory =
+        selectedCategory === "All" || doc.medical_field === selectedCategory;
+      const matchesSearch = doc.name
+        .toLowerCase()
+        .includes(search.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [doctors, selectedCategory, search]);
+
+  // const categoryName = ["All", ...doctors.map((names) => names.medical_field)];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -56,11 +78,13 @@ const Doctors = () => {
           placeholder="Search Doctor"
           placeholderTextColor="#9CA3AF"
           autoCapitalize={"none"}
+          value={search}
+          onChangeText={setSearch}
         />
       </View>
       <View>
         <FlatList
-          data={categoryName}
+          data={categories}
           keyExtractor={(item) => item}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -69,26 +93,41 @@ const Doctors = () => {
             marginVertical: 6,
             gap: 10,
           }}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.tabContainer}>
-              <Text style={styles.tabText}>{item}</Text>
-            </TouchableOpacity>
-          )}
+          renderItem={({ item }) => {
+            const isActive = item === selectedCategory;
+            return (
+              <TouchableOpacity
+                style={[
+                  styles.tabContainer,
+                  isActive && styles.tabContainerActive,
+                ]}
+                onPress={() => setSelectedCategory(item)}
+              >
+                <Text
+                  style={[styles.tabText, isActive && styles.tabTextActive]}
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            );
+          }}
         />
       </View>
       <View style={styles.doctorsFound}>
         <Text style={[styles.tabText, styles.doctorsFoundText]}>
-          {doctors.length}
+          {filteredDoctors.length} Found
         </Text>
 
+        {/* Doctor list */}
         <FlatList
-          data={doctors}
-          keyExtractor={(item) => item.id.toLocaleString()}
+          data={filteredDoctors}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ gap: 10 }}
           renderItem={({ item }) => (
             <DoctorCard
               Items={item}
               onClick={() => router.push(`/doctor-details?id=${item.id}`)}
+              showFav={true}
             />
           )}
           refreshControl={
@@ -96,9 +135,9 @@ const Doctors = () => {
               refreshing={refreshing}
               onRefresh={onRefresh}
               colors={["#3b82f6"]}
-              tintColor={"##3b82f6"}
-              title="pull to refresh doctors"
-              titleColor={"##3b7280"}
+              tintColor="#3b82f6"
+              title="Pull to refresh doctors"
+              titleColor="#3b7280"
             />
           }
         />
@@ -128,19 +167,25 @@ const styles = StyleSheet.create({
   tabContainer: {
     backgroundColor: "#ffff",
     paddingHorizontal: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 10,
     height: 36,
     borderWidth: 1,
-    borderColor: "#1C2A3A",
+    borderColor: "#085be2",
     width: "auto",
+  },
+  tabContainerActive: {
+    backgroundColor: "#085be2",
   },
   tabText: {
     fontFamily: "Spartan_600SemiBold",
-    color: "#222930",
+    color: "#085be2",
     fontWeight: "500",
     paddingBottom: 10,
     textTransform: "capitalize",
+  },
+  tabTextActive: {
+    color: "#fff",
   },
   HeaderText: {
     fontSize: 20,

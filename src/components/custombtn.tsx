@@ -53,7 +53,7 @@ export const TranparentBtn: FC<IButtonProps> = ({
     >
       {isLoading ? (
         <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <ActivityIndicator size={"small"} color={"white"} />
+          <ActivityIndicator size={"small"} color={"#000"} />
         </View>
       ) : (
         <Text style={styles.TranstextStyl}>{text}</Text>

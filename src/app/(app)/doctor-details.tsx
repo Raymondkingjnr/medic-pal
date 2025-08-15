@@ -16,6 +16,7 @@ import DoctorCard from "@/components/doctor-card";
 import ReviewCard from "@/components/review-card";
 import { supabase } from "@/lib/supabase";
 import Custombtn from "@/components/custombtn";
+import { Spartan_700Bold } from "@expo-google-fonts/spartan";
 
 const DoctorDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -145,7 +146,7 @@ const DoctorDetails = () => {
             <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
               Working Hours
             </Text>
-            <Text
+            {/* <Text
               style={{
                 fontFamily: "Spartan_600SemiBold",
                 fontSize: 14,
@@ -154,7 +155,37 @@ const DoctorDetails = () => {
               }}
             >
               Monday-Friday, 08.00 AM-18.00 PM
-            </Text>
+            </Text> */}
+            <View
+              style={{
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: 10,
+                marginTop: 10,
+              }}
+            >
+              {doctor.working_hours.map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    borderWidth: 1,
+                    borderRadius: 7,
+                    borderColor: "#085be2",
+                    padding: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Spartan_700Bold",
+                      fontSize: 14,
+                      color: "#085be2",
+                    }}
+                  >
+                    {item}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
 
           <View style={{ marginTop: 40, gap: 10 }}>
@@ -208,8 +239,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 26,
     marginTop: 12,
-    maxWidth: 290,
-    minWidth: 290,
+    maxWidth: 250,
+    minWidth: 250,
     paddingHorizontal: 10,
   },
   HeaderText: {

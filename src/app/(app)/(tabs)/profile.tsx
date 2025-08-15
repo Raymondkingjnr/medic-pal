@@ -69,15 +69,33 @@ const Profile = () => {
     );
   };
 
+  const onHandleEditPage = () => {
+    if (profile.is_doctor) {
+      router.push("/edit-profile/edit-doc");
+    } else router.push("/edit-profile/edit-user");
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-        <Text style={styles.headerText}>Profile</Text>
+        <View style={styles.flexTop}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={25} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>My Profile</Text>
+        </View>
         <View style={styles.profilepic}>
-          <Image
-            source={images.profilePic}
-            style={{ width: 200, height: 200, objectFit: "contain" }}
-          />
+          {profile.is_doctor ? (
+            <Image
+              source={images.profilePic}
+              style={{ width: 200, height: 200, objectFit: "contain" }}
+            />
+          ) : (
+            <Image
+              source={images.user_pic}
+              style={{ width: 200, height: 200, objectFit: "contain" }}
+            />
+          )}
           <Text
             style={{
               color: "#000",
@@ -86,7 +104,7 @@ const Profile = () => {
               fontSize: 20,
             }}
           >
-            {profile?.full_name ?? "Not Found"}
+            {profile.is_doctor && "Dr."} {profile?.full_name ?? "Not Found"}
           </Text>
         </View>
 
@@ -98,7 +116,10 @@ const Profile = () => {
             paddingBottom: 40,
           }}
         >
-          <TouchableOpacity style={styles.quickLinks}>
+          <TouchableOpacity
+            style={styles.quickLinks}
+            onPress={onHandleEditPage}
+          >
             <View style={styles.flex}>
               <View style={styles.icon}>
                 <Ionicons name="person-add-sharp" size={20} />
@@ -187,6 +208,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  flexTop: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 26,
+    marginTop: 12,
+    maxWidth: 250,
+    minWidth: 250,
+    paddingHorizontal: 10,
   },
   headerText: {
     fontFamily: "Spartan_800ExtraBold",

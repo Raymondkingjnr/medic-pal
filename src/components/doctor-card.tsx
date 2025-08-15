@@ -6,9 +6,11 @@ import { images } from "@/constants/images";
 interface IDoctorProps {
   Items: IDoctors;
   onClick?: () => void;
+  showFav?: boolean;
+  handleFav?: () => void;
 }
 
-const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
+const DoctorCard: FC<IDoctorProps> = ({ Items, onClick, showFav }) => {
   return (
     <TouchableOpacity style={styles.card} onPress={onClick}>
       <View>
@@ -27,7 +29,7 @@ const DoctorCard: FC<IDoctorProps> = ({ Items, onClick }) => {
             Dr. {""}
             {Items.name}
           </Text>
-          <Ionicons name="heart-outline" size={22} />
+          {showFav && <Ionicons name="heart-outline" size={22} />}
         </View>
         <Text style={styles.docSpec}>{Items?.medical_field}</Text>
         <View

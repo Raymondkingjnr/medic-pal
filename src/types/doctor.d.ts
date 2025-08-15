@@ -13,6 +13,7 @@ interface IDoctors {
   verified: boolean;
   top_doctor: boolean;
   availability: boolean
+  working_hours: string[]
 }
 
 interface ILocation {

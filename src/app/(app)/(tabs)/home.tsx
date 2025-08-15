@@ -20,14 +20,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import { Status } from "@/constants/enum";
 import AppointmentCard from "@/components/appointment-card";
-
 import Custombtn, { TranparentBtn } from "@/components/custombtn";
-import DoctorCard from "@/components/doctor-card";
 import { images } from "@/constants/images";
-import {
-  Spartan_600SemiBold,
-  Spartan_800ExtraBold,
-} from "@expo-google-fonts/spartan";
 
 const Home = () => {
   // const [user, setUser] = React.useState<User>();
@@ -162,8 +156,14 @@ const Home = () => {
   }, [fetchDoctors]);
 
   const onRefresh = useCallback(() => {
-    fetchDoctors();
-  }, [fetchDoctors]);
+    setRefreshing(true);
+
+    // Simulate fetching data from API
+    setTimeout(() => {
+      console.log("Data refreshed");
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   const handleCancel = async (appointment: IAppointment) => {
     Alert.alert(
@@ -225,7 +225,18 @@ const Home = () => {
   return (
     <SafeAreaView style={styles.home}>
       <StatusBar barStyle="dark-content" backgroundColor="#000" />
-      <ScrollView style={styles.scroll}>
+
+      <ScrollView
+        style={styles.scroll}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#175fd3"]} // Android
+            tintColor="#175fd3" // iOS
+          />
+        }
+      >
         <View style={styles.flex_between}>
           <Text style={styles.name}>
             {profile ? `Welcome, ${profile?.full_name}` : ""}
@@ -475,16 +486,6 @@ const Home = () => {
                 </Text>
               </TouchableOpacity>
             )}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={["#3b82f6"]}
-                tintColor={"##3b82f6"}
-                title="pull to refresh doctors"
-                titleColor={"##3b7280"}
-              />
-            }
           />
         </View>
       </ScrollView>

@@ -197,12 +197,12 @@ const Signup = () => {
               <View style={styles.rltline} />
             </View>
 
-            <Pressable style={styles.googlebtn}>
+            <TouchableOpacity style={styles.googlebtn}>
               <Image source={icons.googleIcon} />
               <Text style={[styles.buttonText, styles.googletext]}>
                 Sign up with Google
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <Link href={"/login"} asChild>
               <Pressable>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: "center",
     alignItems: "center",
-    marginTop: 60,
+    marginTop: 40,
   },
   headertext: {
     textAlign: "center",
@@ -317,9 +317,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   googlebtn: {
-    backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#085be2",
     width: "100%",
     display: "flex",
     paddingVertical: 12,
@@ -331,15 +330,16 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   googletext: {
-    color: "#1C2A3A",
+    color: "#085be2",
   },
   forgetpassword: {
     marginTop: 25,
   },
   forgetpasswordtext: {
     color: "#1C64F2",
+    fontFamily: "Spartan_700Bold",
     fontWeight: "600",
-    fontSize: 14,
+    fontSize: 16,
   },
   signupbutton: {
     marginTop: 20,

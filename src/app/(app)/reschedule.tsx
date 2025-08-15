@@ -19,26 +19,29 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Status } from "@/constants/enum";
+import { Spartan_600SemiBold } from "@expo-google-fonts/spartan";
+import Custombtn from "@/components/custombtn";
 
 const RescheduleAppointment = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
-
   const router = useRouter();
 
   const [address, setAddress] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [appointmentTime, setAppointmentTime] = useState("");
-  const [time, setTime] = useState(new Date());
-  const [showTimePicker, setShowTimePicker] = useState(false);
+
+  const [selectedTime, setSelectedTime] = useState("");
+  const [scheduledTimes, setScheduledTimes] = useState<string[]>([]);
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
   const [loadingAppointment, setLoadingAppointment] = useState(true);
 
-  const [doctorId, setDoctorId] = useState(null);
-  const [clientId, setClientId] = useState(null);
+  const [doctorId, setDoctorId] = useState<string | null>(null);
+  const [clientId, setClientId] = useState<string | null>(null);
 
-  // Fetch appointment details
+  // 1️⃣ Fetch appointment details
   useEffect(() => {
     const fetchAppointment = async () => {
       setLoadingAppointment(true);
@@ -56,7 +59,7 @@ const RescheduleAppointment = () => {
 
       setAddress(data.client_address || "");
       setAppointmentDate(data.appointment_date);
-      setAppointmentTime(data.appointment_time);
+      setSelectedTime(data.appointment_time);
 
       setDoctorId(data.doctor_id);
       setClientId(data.client_id);
@@ -65,12 +68,6 @@ const RescheduleAppointment = () => {
         const parsedDate = new Date(data.appointment_date);
         setDate(parsedDate);
       }
-      if (data.appointment_time) {
-        const [hour, minute] = data.appointment_time.split(":");
-        const parsedTime = new Date();
-        parsedTime.setHours(Number(hour), Number(minute));
-        setTime(parsedTime);
-      }
 
       setLoadingAppointment(false);
     };
@@ -78,7 +75,40 @@ const RescheduleAppointment = () => {
     fetchAppointment();
   }, [id]);
 
-  const handleConfirmDate = (selectedDate: Date) => {
+  // 2️⃣ Fetch doctor's working hours
+  useEffect(() => {
+    const fetchDoctorSchedule = async () => {
+      if (!doctorId) return;
+      const { data, error } = await supabase
+        .from("doctors")
+        .select("working_hours")
+        .eq("id", doctorId)
+        .single();
+
+      if (!error && data?.working_hours) {
+        setScheduledTimes(data.working_hours);
+      }
+    };
+    fetchDoctorSchedule();
+  }, [doctorId]);
+
+  // 3️⃣ Fetch booked slots for selected date
+  const fetchBookedTimes = async (dateString: string) => {
+    if (!doctorId) return;
+    const { data, error } = await supabase
+      .from("appointments")
+      .select("appointment_time")
+      .eq("doctor_id", doctorId)
+      .eq("appointment_date", dateString)
+      .eq("status", Status.UPCOMING);
+
+    if (!error && data) {
+      setBookedTimes(data.map((appt) => appt.appointment_time));
+    }
+  };
+
+  // 4️⃣ Date selection
+  const handleConfirmDate = async (selectedDate: Date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -87,37 +117,52 @@ const RescheduleAppointment = () => {
       return;
     }
 
+    const dateString = selectedDate.toISOString().split("T")[0];
     setDate(selectedDate);
-    setAppointmentDate(selectedDate.toDateString());
+    setAppointmentDate(dateString);
+    setSelectedTime("");
+    await fetchBookedTimes(dateString);
     setShowDatePicker(false);
   };
 
-  const handleConfirmTime = (selectedTime: Date) => {
-    setTime(selectedTime);
-    setAppointmentTime(
-      selectedTime.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })
-    );
-    setShowTimePicker(false);
-  };
-
+  // 5️⃣ Reschedule appointment
   const handleReschedule = async () => {
-    if (!address || !appointmentDate || !appointmentTime) {
+    if (!address || !appointmentDate || !selectedTime) {
       Alert.alert("Missing info", "Please fill in all fields.");
+      return;
+    }
+
+    // Prevent double booking
+    const { data: existingAppointments, error: existingError } = await supabase
+      .from("appointments")
+      .select("id")
+      .eq("doctor_id", doctorId)
+      .eq("appointment_date", appointmentDate)
+      .eq("appointment_time", selectedTime)
+      .eq("status", Status.UPCOMING)
+      .neq("id", id); // ignore the current appointment
+
+    if (existingError) {
+      Alert.alert("Error", "Could not verify time slot.");
+      return;
+    }
+
+    if (existingAppointments && existingAppointments.length > 0) {
+      Alert.alert(
+        "Slot Taken",
+        "This time slot is already booked. Please select another."
+      );
       return;
     }
 
     setLoading(true);
 
-    // 1️⃣ Update the appointment
     const { error: updateError } = await supabase
       .from("appointments")
       .update({
         client_address: address,
         appointment_date: appointmentDate,
-        appointment_time: appointmentTime,
+        appointment_time: selectedTime,
         status: Status.UPCOMING,
       })
       .eq("id", id);
@@ -126,22 +171,6 @@ const RescheduleAppointment = () => {
       Alert.alert("Error", updateError.message);
       setLoading(false);
       return;
-    }
-
-    // 2️⃣ Update the doctor's appointments array
-    if (doctorId) {
-      await supabase.rpc("add_appointment_to_doctor", {
-        doctor_id_input: doctorId,
-        appointment_id_input: id,
-      });
-    }
-
-    // 3️⃣ Update the client's appointments array
-    if (clientId) {
-      await supabase.rpc("add_appointment_to_profile", {
-        profile_id_input: clientId,
-        appointment_id_input: id,
-      });
     }
 
     Alert.alert("Success", "Appointment rescheduled!");
@@ -165,6 +194,7 @@ const RescheduleAppointment = () => {
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
+          {/* Address */}
           <View style={styles.section}>
             <Text style={styles.label}>Address</Text>
             <TextInput
@@ -176,41 +206,71 @@ const RescheduleAppointment = () => {
             />
           </View>
 
+          {/* Date Picker */}
           <View style={styles.section}>
             <Text style={styles.label}>Pick Date</Text>
-            <Pressable>
-              <TextInput
-                placeholder="Pick A Date"
-                style={styles.input}
-                value={appointmentDate}
-                editable={false}
-                placeholderTextColor="#888"
-                onPress={() => setShowDatePicker(true)}
-              />
+            <Pressable
+              style={styles.input}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text
+                style={{
+                  color: appointmentDate ? "#000" : "#888",
+                  fontFamily: "Spartan_600SemiBold",
+                }}
+              >
+                {appointmentDate || "Select a date"}
+              </Text>
             </Pressable>
           </View>
 
-          <View style={styles.section}>
-            <Text style={styles.label}>Pick Time</Text>
-            <Pressable>
-              <TextInput
-                placeholder="Pick A Time"
-                style={styles.input}
-                value={appointmentTime}
-                editable={false}
-                placeholderTextColor="#888"
-                onPress={() => setShowTimePicker(true)}
-              />
-            </Pressable>
-          </View>
+          {/* Time Slots */}
+          {appointmentDate ? (
+            <View style={styles.section}>
+              <Text style={styles.label}>Select Time Slot</Text>
+              <View style={styles.timeSlotsContainer}>
+                {scheduledTimes.length > 0 ? (
+                  scheduledTimes.map((slot) => {
+                    const isBooked = bookedTimes.includes(slot);
+                    return (
+                      <TouchableOpacity
+                        key={slot}
+                        style={[
+                          styles.timeSlot,
+                          selectedTime === slot && styles.timeSlotSelected,
+                          isBooked && styles.timeSlotDisabled,
+                        ]}
+                        disabled={isBooked}
+                        onPress={() => setSelectedTime(slot)}
+                      >
+                        <Text
+                          style={[
+                            styles.timeSlotText,
+                            selectedTime === slot &&
+                              styles.timeSlotTextSelected,
+                            isBooked && styles.timeSlotTextDisabled,
+                          ]}
+                        >
+                          {slot}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })
+                ) : (
+                  <Text style={{ color: "#888" }}>
+                    No available working hours found
+                  </Text>
+                )}
+              </View>
+            </View>
+          ) : null}
 
-          <TouchableOpacity style={styles.bookbtn} onPress={handleReschedule}>
-            {loading ? (
-              <ActivityIndicator size={20} />
-            ) : (
-              <Text style={styles.bookBtnText}>Confirm</Text>
-            )}
-          </TouchableOpacity>
+          <Custombtn
+            text="Confirm"
+            isLoading={loading}
+            onClick={handleReschedule}
+            customStyle={styles.bookbtn}
+          />
         </KeyboardAvoidingView>
 
         <DateTimePickerModal
@@ -219,14 +279,6 @@ const RescheduleAppointment = () => {
           date={date}
           onConfirm={handleConfirmDate}
           onCancel={() => setShowDatePicker(false)}
-          themeVariant="dark"
-        />
-        <DateTimePickerModal
-          isVisible={showTimePicker}
-          mode="time"
-          date={time}
-          onConfirm={handleConfirmTime}
-          onCancel={() => setShowTimePicker(false)}
           themeVariant="dark"
         />
       </ScrollView>
@@ -272,9 +324,6 @@ const styles = StyleSheet.create({
     fontFamily: "Spartan_600SemiBold",
   },
   bookbtn: {
-    backgroundColor: "#dcdcdc",
-    borderRadius: 15,
-    paddingVertical: 17,
     marginTop: 40,
     marginHorizontal: 10,
   },
@@ -284,5 +333,39 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     fontFamily: "Spartan_700Bold",
+  },
+  timeSlotsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 10,
+  },
+  timeSlot: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    backgroundColor: "#f8f8f8",
+  },
+  timeSlotSelected: {
+    backgroundColor: "#007BFF",
+    borderColor: "#007BFF",
+  },
+  timeSlotDisabled: {
+    backgroundColor: "#e3e3e3",
+    borderColor: "#ccc",
+  },
+  timeSlotText: {
+    color: "#000",
+    fontSize: 14,
+    fontWeight: "500",
+    fontFamily: "Spartan_600SemiBold",
+  },
+  timeSlotTextSelected: {
+    color: "#fff",
+  },
+  timeSlotTextDisabled: {
+    color: "#888",
   },
 });

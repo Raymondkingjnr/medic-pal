@@ -160,7 +160,7 @@ const OnboardingScreen = ({ navigation }) => {
   const scrollViewRef = useRef(null);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.onboardingBg}>
       <Animated.FlatList
         ref={scrollViewRef}
         data={slides}
@@ -246,6 +246,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
+    backgroundColor: "#000",
+  },
+  onboardingBg: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    backgroundColor: "#fff",
   },
   logincontainer: {
     flex: 1,
@@ -263,7 +271,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "#1C2A3A",
+    backgroundColor: "#211363",
     padding: 15,
     borderRadius: 5,
     marginTop: 20,
@@ -274,8 +282,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    flex: 1,
-    resizeMode: "cover",
+    resizeMode: "contain",
   },
 
   buttonText: {
@@ -283,6 +290,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 500,
     textAlign: "center",
+    fontFamily: "Spartan_600SemiBold",
   },
   slide: {
     flex: 1,
@@ -330,7 +338,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   nextButton: {
-    backgroundColor: "#1C2A3A",
+    backgroundColor: "#085be2",
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 10,
@@ -356,7 +364,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#1C2A3A",
+    backgroundColor: "#085be2",
     marginHorizontal: 5,
   },
 });

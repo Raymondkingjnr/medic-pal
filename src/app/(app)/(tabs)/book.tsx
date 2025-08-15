@@ -226,6 +226,7 @@ const Book: React.FC = () => {
             <Custombtn
               text="Book An Appointment"
               customStyle={styles.bookbtn}
+              onClick={() => router.push("/doctors")}
             />
           </SafeAreaView>
         }

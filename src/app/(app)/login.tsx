@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   googlebtn: {
     backgroundColor: "F#FFF",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: "#085be2",
     width: "100%",
 
     paddingVertical: 12,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   googletext: {
-    color: "#1C2A3A",
+    color: "#085be2",
     fontFamily: "Spartan_600SemiBold",
   },
   forgetpassword: {

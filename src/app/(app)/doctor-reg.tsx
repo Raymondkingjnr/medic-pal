@@ -25,6 +25,7 @@ const DoctorForm = () => {
   const [licenseNumber, setLicenseNumber] = useState("");
   const [yearsExperience, setYearsExperience] = useState("");
   const [loading, setLoading] = useState(false);
+  const [workingHours, setWorkingHours] = useState<string[]>([]);
 
   const router = useRouter();
 
@@ -39,6 +40,20 @@ const DoctorForm = () => {
     lat: null as number | null,
     lng: null as number | null,
   });
+
+  const hoursList = [
+    "08:00 AM",
+    "09:00 AM",
+    "10:00 AM",
+    "11:00 AM",
+    "12:00 PM",
+    "01:00 PM",
+    "02:00 PM",
+    "03:00 PM",
+    "04:00 PM",
+    "05:00 PM",
+    "06:00 PM",
+  ];
 
   const getCurrentLocation = async () => {
     try {
@@ -66,6 +81,12 @@ const DoctorForm = () => {
     }
   };
 
+  const toggleHour = (hour: string) => {
+    setWorkingHours((prev) =>
+      prev.includes(hour) ? prev.filter((h) => h !== hour) : [...prev, hour]
+    );
+  };
+
   const registerDoctor = async () => {
     const {
       data: { user },
@@ -76,22 +97,23 @@ const DoctorForm = () => {
       return;
     }
 
-    // Basic validation
     if (
       !name.trim() ||
       !email.trim() ||
       !medicalField.trim() ||
       !licenseNumber.trim() ||
-      !yearsExperience.trim()
+      !yearsExperience.trim() ||
+      workingHours.length === 0
     ) {
-      Alert.alert("Validation", "Please fill all required fields.");
+      Alert.alert(
+        "Validation",
+        "Please fill all required fields and select working hours."
+      );
       return;
     }
 
     setLoading(true);
-
     try {
-      // Insert doctor record
       const { error: insertError } = await supabase.from("doctors").insert([
         {
           user_id: user.id,
@@ -99,27 +121,19 @@ const DoctorForm = () => {
           email: email.trim(),
           medical_field: medicalField.trim(),
           license_number: licenseNumber.trim(),
-
           years_experience: parseInt(yearsExperience, 10) || 0,
-          location, // includes manual address + GPS
+          location,
+          working_hours: workingHours, // store array
         },
       ]);
 
-      if (insertError) {
-        console.error("Insert error:", insertError);
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
       Alert.alert("Success", "Doctor registered successfully!");
-      // optional: navigate back or clear form
       router.back();
     } catch (err: any) {
       console.error("registerDoctor error:", err);
-      // show friendly message, also show raw message for dev
-      Alert.alert(
-        "Error uploading/registering",
-        err.message || JSON.stringify(err)
-      );
+      Alert.alert("Error", err.message || JSON.stringify(err));
     } finally {
       setLoading(false);
     }
@@ -211,6 +225,31 @@ const DoctorForm = () => {
                 value={yearsExperience}
                 onChangeText={setYearsExperience}
               />
+            </View>
+
+            <View style={{ marginTop: 20 }}>
+              <Text style={styles.label}>Select Working Hours</Text>
+              <View style={styles.hoursContainer}>
+                {hoursList.map((hour) => (
+                  <TouchableOpacity
+                    key={hour}
+                    style={[
+                      styles.hourBox,
+                      workingHours.includes(hour) && styles.hourBoxSelected,
+                    ]}
+                    onPress={() => toggleHour(hour)}
+                  >
+                    <Text
+                      style={[
+                        styles.hourText,
+                        workingHours.includes(hour) && styles.hourTextSelected,
+                      ]}
+                    >
+                      {hour}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             {/* LOCATION */}
@@ -309,5 +348,33 @@ const styles = StyleSheet.create({
   confirmbtn: {
     width: "100%",
     marginVertical: 10,
+  },
+  hoursContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 10,
+  },
+  hourBox: {
+    borderWidth: 1,
+    borderColor: "#000",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginRight: 8,
+    marginBottom: 8,
+    width: 104,
+  },
+  hourBoxSelected: {
+    backgroundColor: "#007AFF",
+    borderColor: "#007AFF",
+  },
+  hourText: {
+    color: "#080d24",
+    fontSize: 14,
+    fontFamily: "Spartan_600SemiBold",
+  },
+  hourTextSelected: {
+    color: "#fff",
   },
 });
