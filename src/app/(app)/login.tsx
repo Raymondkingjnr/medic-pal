@@ -9,8 +9,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
-  ActivityIndicator,
-  TouchableOpacity,
 } from "react-native";
 import React, { useEffect } from "react";
 import { icons } from "@/constants/icons";
@@ -25,7 +23,6 @@ import {
   useFonts,
 } from "@expo-google-fonts/spartan";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Entypo from "@expo/vector-icons/Entypo";
 import { useLocalSearchParams } from "expo-router";
 import { UserAppMetadata } from "@supabase/supabase-js";
 import Custombtn from "@/components/custombtn";
@@ -42,6 +39,8 @@ const Login = () => {
 
   const params = useLocalSearchParams();
   const passedName = typeof params.name === "string" ? params.name : undefined;
+  const passedUsername =
+    typeof params.username === "string" ? params.username : undefined;
 
   useEffect(() => {
     const { data: { subscription } = {} } = supabase.auth.onAuthStateChange(
@@ -94,6 +93,7 @@ const Login = () => {
           {
             id: data.user.id,
             full_name: passedName,
+            user_name: passedUsername,
             is_doctor: false,
             email: email,
           },

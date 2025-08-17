@@ -8,8 +8,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  RefreshControl,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { images } from "@/constants/images";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -17,9 +18,21 @@ import { useRouter } from "expo-router";
 
 const Profile = () => {
   const [profile, setProfile] = useState<IProfile>(null);
+  const [doctorData, setDoctorData] = useState<IDoctors>(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   const router = useRouter();
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    // Simulate fetching data from API
+    setTimeout(() => {
+      console.log("Data refreshed");
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -40,6 +53,27 @@ const Profile = () => {
     };
     fetchProfile();
   }, []);
+
+  // Fetch Doctor data
+  useEffect(() => {
+    const fetchDoc = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("doctors")
+          .select("*")
+          .eq("user_id", user.id)
+          .single();
+        if (!error) setDoctorData(data);
+      }
+    };
+    fetchDoc();
+  }, []);
+
+  console.log(doctorData);
 
   if (loadingProfile) return <ActivityIndicator style={{ flex: 1 }} />;
 
@@ -71,13 +105,22 @@ const Profile = () => {
 
   const onHandleEditPage = () => {
     if (profile.is_doctor) {
-      router.push("/edit-profile/edit-doc");
-    } else router.push("/edit-profile/edit-user");
+      router.push(`/edit-profile/edit-doc?id=${profile.id}`);
+    } else router.push(`/edit-profile/edit-user?id=${profile.id}`);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#175fd3"]} // Android
+            tintColor="#175fd3" // iOS
+          />
+        }
+      >
         <View style={styles.flexTop}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="arrow-back" size={25} color="#000" />
@@ -104,7 +147,7 @@ const Profile = () => {
               fontSize: 20,
             }}
           >
-            {profile.is_doctor && "Dr."} {profile?.full_name ?? "Not Found"}
+            {profile.is_doctor ? `Dr. ${doctorData?.name}` : profile?.user_name}
           </Text>
         </View>
 

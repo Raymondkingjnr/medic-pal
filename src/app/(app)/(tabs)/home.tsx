@@ -142,7 +142,10 @@ const Home = () => {
 
   const fetchDoctors = useCallback(async () => {
     setRefreshing(true);
-    const { data, error } = await supabase.from("doctors").select("*");
+    const { data, error } = await supabase
+      .from("doctors")
+      .select("*")
+      .eq("top_doctor", true);
     if (error) {
       console.error("Error fetching doctors:", error);
     } else {
@@ -239,9 +242,9 @@ const Home = () => {
       >
         <View style={styles.flex_between}>
           <Text style={styles.name}>
-            {profile ? `Welcome, ${profile?.full_name}` : ""}
+            {profile ? `Welcome, ${profile?.user_name}` : ""}
           </Text>
-          <Ionicons name="notifications-sharp" color={"#175fd3"} size={25} />
+          <Ionicons name="notifications-sharp" color={"#0f57ca"} size={25} />
         </View>
 
         <View
@@ -469,7 +472,7 @@ const Home = () => {
                 <Text
                   style={{
                     fontFamily: "Spartan_800ExtraBold",
-                    fontSize: 10,
+                    fontSize: 9,
                     textAlign: "center",
                   }}
                 >
@@ -478,8 +481,9 @@ const Home = () => {
                 <Text
                   style={{
                     fontFamily: "Spartan_600SemiBold",
-                    fontSize: 14,
+                    fontSize: 12,
                     paddingTop: 6,
+                    textAlign: "center",
                   }}
                 >
                   {item.medical_field}

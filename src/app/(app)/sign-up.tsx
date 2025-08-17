@@ -26,13 +26,13 @@ import {
   Spartan_800ExtraBold,
   useFonts,
 } from "@expo-google-fonts/spartan";
-import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Custombtn from "@/components/custombtn";
 
 const Signup = () => {
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +41,7 @@ const Signup = () => {
 
   async function signupwithemail() {
     setIsLoading(true);
-    if (!email || !password || !name) {
+    if (!email || !password || !name || !username) {
       Alert.alert("All fields are required");
       setIsLoading(false);
       return;
@@ -71,7 +71,7 @@ const Signup = () => {
               onPress: () =>
                 router.replace({
                   pathname: "/login",
-                  params: { name }, // Pass the name as a param
+                  params: { name, username }, // Pass the name as a param
                 }),
             },
           ]
@@ -118,11 +118,26 @@ const Signup = () => {
 
             <View style={styles.relativeform}>
               <TextInput
-                placeholder="Full Name"
+                placeholder="Fullname"
                 placeholderTextColor="#9CA3AF"
                 style={styles.input}
                 value={name}
                 onChangeText={(text) => setName(text)}
+              />
+              <Ionicons
+                style={styles.icon}
+                name="person-outline"
+                size={15}
+                color="black"
+              />
+            </View>
+            <View style={styles.relativeform}>
+              <TextInput
+                placeholder="Username"
+                placeholderTextColor="#9CA3AF"
+                style={styles.input}
+                value={username}
+                onChangeText={(text) => setUsername(text)}
               />
               <Ionicons
                 style={styles.icon}
