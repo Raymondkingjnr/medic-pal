@@ -127,13 +127,13 @@ const DoctorDetails = () => {
           </View>
 
           <View style={{ marginTop: 40, gap: 10 }}>
-            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
+            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 14 }}>
               About Me
             </Text>
             <Text
               style={{
                 fontFamily: "Spartan_600SemiBold",
-                fontSize: 14,
+                fontSize: 12,
                 lineHeight: 23,
                 color: "#6B7280",
               }}
@@ -143,7 +143,7 @@ const DoctorDetails = () => {
           </View>
 
           <View style={{ marginTop: 40, gap: 10 }}>
-            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
+            <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 14 }}>
               Working Hours
             </Text>
             {/* <Text
@@ -160,7 +160,7 @@ const DoctorDetails = () => {
               style={{
                 flexDirection: "row",
                 flexWrap: "wrap",
-                gap: 10,
+                gap: 5,
                 marginTop: 10,
               }}
             >
@@ -192,14 +192,14 @@ const DoctorDetails = () => {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 20 }}>
+              <Text style={{ fontFamily: "Spartan_700Bold", fontSize: 14 }}>
                 Reviews
               </Text>
               <TouchableOpacity>
                 <Text
                   style={{
                     fontFamily: "Spartan_600SemiBold",
-                    fontSize: 17,
+                    fontSize: 12,
                     lineHeight: 23,
                   }}
                 >
@@ -239,12 +239,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 26,
     marginTop: 12,
-    maxWidth: 250,
-    minWidth: 250,
+    maxWidth: 280,
+    minWidth: 280,
     paddingHorizontal: 10,
   },
   HeaderText: {
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: "Spartan_700Bold",
     textAlign: "center",
   },
@@ -267,6 +267,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 2,
     fontFamily: "Spartan_700Bold",
-    fontSize: 13,
+    fontSize: 10,
   },
 });

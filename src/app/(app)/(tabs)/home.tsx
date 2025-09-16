@@ -22,6 +22,7 @@ import { Status } from "@/constants/enum";
 import AppointmentCard from "@/components/appointment-card";
 import Custombtn, { TranparentBtn } from "@/components/custombtn";
 import { images } from "@/constants/images";
+import { Dimensions } from "react-native";
 
 const Home = () => {
   // const [user, setUser] = React.useState<User>();
@@ -223,12 +224,12 @@ const Home = () => {
 
   const firstAppointment = appointment[0];
 
+  const { height, width } = Dimensions.get("window");
+
   if (loadingProfile) return <ActivityIndicator style={{ flex: 1 }} />;
 
   return (
     <SafeAreaView style={styles.home}>
-      <StatusBar barStyle="dark-content" backgroundColor="#000" />
-
       <ScrollView
         style={styles.scroll}
         refreshControl={
@@ -338,6 +339,7 @@ const Home = () => {
             paddingHorizontal: 14,
             padding: 20,
             gap: 10,
+            width: width,
           }}
         >
           <Custombtn
@@ -364,7 +366,7 @@ const Home = () => {
             <Text
               style={{
                 fontFamily: "Spartan_700Bold",
-                fontSize: 17,
+                fontSize: 14,
                 color: "#757575ede",
               }}
             >
@@ -389,7 +391,7 @@ const Home = () => {
               <View style={styles.iconcover}>
                 <Ionicons name="calendar-sharp" size={21} color={"#3B82F6"} />
               </View>
-              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 9 }}>
                 bookings
               </Text>
             </TouchableOpacity>
@@ -400,7 +402,7 @@ const Home = () => {
               <View style={styles.iconcover}>
                 <Ionicons name="medical-sharp" size={21} color={"#22C55E"} />
               </View>
-              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 9 }}>
                 Doctors
               </Text>
             </TouchableOpacity>
@@ -411,7 +413,7 @@ const Home = () => {
               <View style={styles.iconcover}>
                 <Ionicons name="person-sharp" size={21} color={"#A855F7"} />
               </View>
-              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 9 }}>
                 Profile
               </Text>
             </TouchableOpacity>
@@ -423,7 +425,14 @@ const Home = () => {
                   color={"#F97316"}
                 />
               </View>
-              <Text style={{ fontFamily: "Spartan_600SemiBold", fontSize: 10 }}>
+              <Text
+                style={{
+                  fontFamily: "Spartan_600SemiBold",
+                  fontSize: 9,
+                  width: 100,
+                  textAlign: "center",
+                }}
+              >
                 Reminders
               </Text>
             </TouchableOpacity>
@@ -434,7 +443,7 @@ const Home = () => {
           <Text
             style={{
               fontFamily: "Spartan_700Bold",
-              fontSize: 17,
+              fontSize: 14,
               color: "#757575ede",
             }}
           >
@@ -474,6 +483,7 @@ const Home = () => {
                     fontFamily: "Spartan_800ExtraBold",
                     fontSize: 9,
                     textAlign: "center",
+                    width: 98,
                   }}
                 >
                   Dr. {item.name}
@@ -519,14 +529,15 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: "Spartan_600SemiBold",
     paddingTop: 7,
-    fontSize: 20,
+    fontSize: 15,
     textTransform: "capitalize",
   },
   appointbtn: {
     width: 200,
   },
   width: {
-    width: 160,
+    width: 185,
+    borderRadius: 8,
   },
   icon: {
     position: "absolute",

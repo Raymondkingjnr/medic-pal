@@ -82,10 +82,12 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontFamily: "Spartan_700Bold",
     textAlign: "center",
+    fontSize: 12,
   },
   TranstextStyl: {
     color: "#085be2",
     fontFamily: "Spartan_700Bold",
     textAlign: "center",
+    fontSize: 12,
   },
 });
