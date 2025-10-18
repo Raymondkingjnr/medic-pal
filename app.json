@@ -15,6 +15,14 @@
       ]
     ],
     "name": "medic-app",
-    "slug": "medic-app"
+    "slug": "medic-app",
+    "extra": {
+      "router": {
+        "origin": "https://n"
+      },
+      "eas": {
+        "projectId": "7d906d78-15f1-437d-8aff-7eb5ac54a588"
+      }
+    }
   }
 }

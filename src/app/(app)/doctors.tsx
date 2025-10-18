@@ -7,6 +7,7 @@ import {
   TextInput,
   FlatList,
   RefreshControl,
+  ScrollView,
 } from "react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -82,37 +83,7 @@ const Doctors = () => {
           onChangeText={setSearch}
         />
       </View>
-      <View>
-        <FlatList
-          data={categories}
-          keyExtractor={(item) => item}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingHorizontal: 15,
-            marginVertical: 6,
-            gap: 10,
-          }}
-          renderItem={({ item }) => {
-            const isActive = item === selectedCategory;
-            return (
-              <TouchableOpacity
-                style={[
-                  styles.tabContainer,
-                  isActive && styles.tabContainerActive,
-                ]}
-                onPress={() => setSelectedCategory(item)}
-              >
-                <Text
-                  style={[styles.tabText, isActive && styles.tabTextActive]}
-                >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            );
-          }}
-        />
-      </View>
+
       <View style={styles.doctorsFound}>
         <Text style={[styles.tabText, styles.doctorsFoundText]}>
           {filteredDoctors.length} Found
@@ -140,6 +111,48 @@ const Doctors = () => {
               titleColor="#3b7280"
             />
           }
+          ListHeaderComponent={
+            <>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 12 }}
+              >
+                {categories.map((item, index) => {
+                  const isActive = item === selectedCategory;
+                  const key = index;
+                  return (
+                    <TouchableOpacity
+                      key={key}
+                      style={[
+                        styles.tabContainer,
+                        isActive && styles.tabContainerActive,
+                      ]}
+                      onPress={() => setSelectedCategory(item)}
+                    >
+                      <Text
+                        style={[
+                          styles.tabText,
+                          isActive && styles.tabTextActive,
+                        ]}
+                      >
+                        {item}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </>
+          }
+          ListEmptyComponent={
+            <View style={{ alignItems: "center", marginTop: 40 }}>
+              <Text
+                style={{ color: "#666", fontFamily: "Spartan_600SemiBold" }}
+              >
+                Sorry, can't find any doctors
+              </Text>
+            </View>
+          }
         />
       </View>
     </SafeAreaView>
@@ -152,6 +165,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingTop: 20,
   },
   flexTop: {
     display: "flex",
@@ -168,8 +182,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffff",
     paddingHorizontal: 10,
     borderRadius: 20,
-    padding: 10,
-    height: 36,
+    padding: 8,
     borderWidth: 1,
     borderColor: "#085be2",
     width: "auto",
@@ -181,14 +194,15 @@ const styles = StyleSheet.create({
     fontFamily: "Spartan_600SemiBold",
     color: "#085be2",
     fontWeight: "500",
-    paddingBottom: 10,
     textTransform: "capitalize",
+    fontSize: 11,
   },
   tabTextActive: {
     color: "#fff",
+    fontSize: 11,
   },
   HeaderText: {
-    fontSize: 20,
+    fontSize: 13,
     fontFamily: "Spartan_700Bold",
     textAlign: "center",
     paddingHorizontal: 10,
@@ -208,7 +222,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 45,
     borderRadius: 7,
-    fontSize: 18,
+    fontSize: 12,
+    paddingTop: 8,
     paddingLeft: 10,
     width: "100%",
     fontWeight: "500",
@@ -216,13 +231,13 @@ const styles = StyleSheet.create({
   doctorsFound: {
     flex: 1,
     paddingHorizontal: 7,
-    marginTop: 20,
     marginBottom: 10,
     backgroundColor: "#fdfdfd",
   },
   doctorsFoundText: {
     fontFamily: "Spartan_800ExtraBold",
-    paddingHorizontal: 15,
-    fontSize: 20,
+    paddingHorizontal: 6,
+    paddingBottom: 9,
+    fontSize: 12,
   },
 });

@@ -73,8 +73,6 @@ const Profile = () => {
     fetchDoc();
   }, []);
 
-  console.log(doctorData);
-
   if (loadingProfile) return <ActivityIndicator style={{ flex: 1 }} />;
 
   const handleLogout = () => {
@@ -144,7 +142,8 @@ const Profile = () => {
               color: "#000",
               fontFamily: "Spartan_700Bold",
               textTransform: "capitalize",
-              fontSize: 20,
+              fontSize: 15,
+              paddingBottom: 20,
             }}
           >
             {profile.is_doctor ? `Dr. ${doctorData?.name}` : profile?.user_name}
@@ -154,7 +153,7 @@ const Profile = () => {
         <View
           style={{
             paddingHorizontal: 10,
-            marginTop: 40,
+            marginTop: 30,
             gap: 25,
             paddingBottom: 40,
           }}
@@ -251,6 +250,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingBottom: 30,
   },
   flexTop: {
     display: "flex",
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontFamily: "Spartan_800ExtraBold",
-    fontSize: 20,
+    fontSize: 14,
     textAlign: "center",
     paddingVertical: 10,
   },
@@ -288,16 +288,16 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 17,
+    fontSize: 12.5,
     textTransform: "capitalize",
   },
   quickLinks: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    borderWidth: 1,
-    paddingVertical: 10,
-    borderBottomColor: "#cccccc",
+    paddingBottom: 10,
+    // borderWidth: 1,
+    // borderBottomColor: "#cccccc",
     borderTopColor: "transparent",
     borderLeftColor: "transparent",
     borderRightColor: "transparent",

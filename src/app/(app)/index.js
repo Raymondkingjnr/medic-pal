@@ -182,10 +182,6 @@ const OnboardingScreen = ({ navigation }) => {
         >
           <Text style={styles.nextText}>Skip</Text>
         </TouchableOpacity>
-
-        {/* <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextText}>Next</Text>
-        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -250,8 +246,7 @@ const styles = StyleSheet.create({
   },
   onboardingBg: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+
     position: "relative",
     backgroundColor: "#fff",
   },
@@ -264,10 +259,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   title: {
-    fontSize: 24,
+    fontSize: 15,
     textAlign: "center",
     fontWeight: "bold",
     marginBottom: 20,
+    fontFamily: "Spartan_600SemiBold",
   },
 
   button: {
@@ -287,7 +283,7 @@ const styles = StyleSheet.create({
 
   buttonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 500,
     textAlign: "center",
     fontFamily: "Spartan_600SemiBold",
@@ -307,7 +303,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontFamily: "Spartan_600SemiBold",
     fontWeight: "bold",
     marginBottom: 20,
@@ -315,7 +311,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 12,
     textAlign: "center",
     lineHeight: 24,
     fontFamily: "Spartan_500Medium",
@@ -346,7 +342,7 @@ const styles = StyleSheet.create({
   },
   nextText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "bold",
     textAlign: "center",
     fontFamily: "Spartan_600SemiBold",

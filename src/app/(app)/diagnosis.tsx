@@ -12,12 +12,15 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Markdown from "react-native-markdown-display";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 
 const Diagnosis = () => {
   const [query, setQuery] = useState("");
   const [airesponse, setAiResponse] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
 
+  const router = useRouter();
   const getAiGuidance = async () => {
     if (!query) return;
 
@@ -46,7 +49,10 @@ const Diagnosis = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flex: 1, paddingHorizontal: 20 }}>
+        <TouchableOpacity onPress={() => router.back()} activeOpacity={0.9}>
+          <Ionicons name="arrow-back" size={25} />
+        </TouchableOpacity>
         <View style={styles.content}>
           <Text style={styles.headerText}>
             Perform a medial check up with our Ai
@@ -65,7 +71,7 @@ const Diagnosis = () => {
           </Text>
         </View>
         {(airesponse || aiLoading) && (
-          <View style={{ marginTop: 20, paddingHorizontal: 10, flex: 1 }}>
+          <View style={{ marginTop: 20 }}>
             {aiLoading ? (
               <View
                 style={{
@@ -94,7 +100,7 @@ const Diagnosis = () => {
                       paddingBottom: 20,
                       fontFamily: "Spartan_700Bold",
                       lineHeight: 32,
-                      fontSize: 14,
+                      fontSize: 12,
                     },
                   }}
                 >
@@ -106,9 +112,14 @@ const Diagnosis = () => {
         )}
 
         <TouchableOpacity
-          style={aiLoading || !query ? styles.loadingbtn : styles.btn}
+          style={[
+            styles.btn,
+            aiLoading || !query || airesponse.length > 3
+              ? styles.loadingbtn
+              : "",
+          ]}
           onPress={getAiGuidance}
-          disabled={aiLoading || !query}
+          disabled={aiLoading || !query || airesponse.length > 3}
         >
           {aiLoading ? (
             <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -128,14 +139,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingHorizontal: 40,
   },
   headerText: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 17,
-    paddingVertical: 12,
+    fontSize: 13,
+    paddingTop: 30,
+    paddingBottom: 10,
   },
   content: {
-    paddingHorizontal: 10,
     marginTop: 20,
   },
   input: {
@@ -152,23 +164,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 17,
     marginVertical: 10,
-    marginHorizontal: 10,
   },
   btnText: {
     textAlign: "center",
     color: "#fff",
     fontFamily: "Spartan_700Bold",
-    fontSize: 18,
+    fontSize: 13,
   },
   loadingbtn: {
     backgroundColor: "#b6c4fb",
-    borderRadius: 20,
-    paddingVertical: 17,
-    marginVertical: 10,
-    marginHorizontal: 10,
   },
   ai: {
-    fontSize: 15,
+    fontSize: 12,
     color: "#0a015c",
   },
 });

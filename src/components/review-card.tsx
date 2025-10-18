@@ -11,12 +11,12 @@ const ReviewCard: FC<ReviewCardProps> = ({ items }) => {
   return (
     <View style={styles.card}>
       <View style={{ flexDirection: "row", gap: 6 }}>
-        <Image source={images.profilePic} style={styles.image} />
+        <Image source={images.user_pic} style={styles.image} />
         <View style={{ flexDirection: "column", marginTop: 15 }}>
           <Text
             style={{
               fontFamily: "Spartan_800ExtraBold",
-              fontSize: 17,
+              fontSize: 12,
               lineHeight: 23,
               color: "#212122",
             }}
@@ -26,7 +26,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ items }) => {
           <Text
             style={{
               fontFamily: "Spartan_800ExtraBold",
-              fontSize: 13,
+              fontSize: 9,
               lineHeight: 23,
               color: "#212122",
             }}
@@ -39,7 +39,7 @@ const ReviewCard: FC<ReviewCardProps> = ({ items }) => {
         <Text
           style={{
             fontFamily: "Spartan_600SemiBold",
-            fontSize: 13,
+            fontSize: 11,
             lineHeight: 20,
             color: "#6B7280",
           }}

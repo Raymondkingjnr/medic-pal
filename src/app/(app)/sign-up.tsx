@@ -241,12 +241,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 30,
   },
   headertext: {
     textAlign: "center",
     paddingTop: 14,
-    fontSize: 25,
+    fontSize: 19,
     fontWeight: "400",
     color: "#6B7280",
     fontFamily: "Spartan_800ExtraBold",
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   downtext: {
     paddingTop: 0,
     color: "#6B7280",
-    fontSize: 19,
+    fontSize: 14,
     textAlign: "center",
     fontWeight: "300",
     fontFamily: "Spartan_600SemiBold",
@@ -265,8 +265,9 @@ const styles = StyleSheet.create({
   welcomtext: {
     fontWeight: "semibold",
     color: "#1C2A3A",
-    fontSize: 30,
-    paddingVertical: 40,
+    fontSize: 17,
+    paddingTop: 40,
+    paddingBottom: 5,
     fontFamily: "Spartan_700Bold",
   },
   input: {
@@ -275,7 +276,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     height: 45,
     borderRadius: 7,
-    fontSize: 18,
+    fontSize: 12,
+    paddingTop: 5,
     paddingLeft: 40,
     fontFamily: "Spartan_500Medium",
     width: "100%",
@@ -346,6 +348,7 @@ const styles = StyleSheet.create({
   },
   googletext: {
     color: "#085be2",
+    fontSize: 12,
   },
   forgetpassword: {
     marginTop: 25,
@@ -354,11 +357,11 @@ const styles = StyleSheet.create({
     color: "#1C64F2",
     fontFamily: "Spartan_700Bold",
     fontWeight: "600",
-    fontSize: 16,
+    fontSize: 12,
   },
   signupbutton: {
     marginTop: 20,
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Spartan_600SemiBold",
   },
 });

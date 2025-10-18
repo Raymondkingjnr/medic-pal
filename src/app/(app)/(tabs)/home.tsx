@@ -339,7 +339,7 @@ const Home = () => {
             paddingHorizontal: 14,
             padding: 20,
             gap: 10,
-            width: width,
+            width: "auto",
           }}
         >
           <Custombtn
@@ -511,6 +511,7 @@ const styles = StyleSheet.create({
   home: {
     backgroundColor: "#FFFF",
     flex: 1,
+    paddingBottom: 30,
   },
   scroll: {
     flex: 1,
@@ -536,7 +537,7 @@ const styles = StyleSheet.create({
     width: 200,
   },
   width: {
-    width: 185,
+    width: 180,
     borderRadius: 8,
   },
   icon: {

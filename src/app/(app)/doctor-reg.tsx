@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 12,
     fontFamily: "Spartan_800ExtraBold",
   },
   flexTop: {
@@ -334,14 +334,14 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 10,
     marginVertical: 6,
-    fontSize: 17,
+    fontSize: 12,
     justifyContent: "center",
     color: "#000",
     fontFamily: "Spartan_600SemiBold",
   },
   label: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 15,
+    fontSize: 12,
     marginVertical: 5,
     color: "#000",
   },
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   },
   hourText: {
     color: "#080d24",
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: "Spartan_600SemiBold",
   },
   hourTextSelected: {

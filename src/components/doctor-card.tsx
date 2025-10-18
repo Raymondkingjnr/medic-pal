@@ -108,11 +108,11 @@ const styles = StyleSheet.create({
   },
   docName: {
     fontFamily: "Spartan_800ExtraBold",
-    fontSize: 16,
+    fontSize: 12,
   },
   docSpec: {
     fontFamily: "Spartan_600SemiBold",
-    fontSize: 17,
+    fontSize: 13,
     paddingTop: 10,
     color: "#4B5563",
   },
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   docLocoText: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 13,
+    fontSize: 10,
   },
   verti: {
     height: 14,
@@ -130,6 +130,6 @@ const styles = StyleSheet.create({
   },
   docRevText: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 14,
+    fontSize: 10,
   },
 });

@@ -19,7 +19,11 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { Status } from "@/constants/enum";
-import { Spartan_600SemiBold } from "@expo-google-fonts/spartan";
+import {
+  Spartan_300Light,
+  Spartan_400Regular,
+  Spartan_600SemiBold,
+} from "@expo-google-fonts/spartan";
 import Custombtn from "@/components/custombtn";
 
 const RescheduleAppointment = () => {
@@ -217,6 +221,7 @@ const RescheduleAppointment = () => {
                 style={{
                   color: appointmentDate ? "#000" : "#888",
                   fontFamily: "Spartan_600SemiBold",
+                  fontSize: 12,
                 }}
               >
                 {appointmentDate || "Select a date"}
@@ -298,16 +303,16 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   HeaderText: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 12,
     textAlign: "center",
     flex: 1,
     color: "#000",
+    fontFamily: "Spartan_700Bold",
   },
   section: { paddingHorizontal: 10, marginTop: 30 },
   label: {
-    fontFamily: "Spartan_700Bold",
-    fontSize: 15,
+    fontFamily: "Spartan_600SemiBold",
+    fontSize: 12,
     marginVertical: 5,
     color: "#000",
   },
@@ -318,7 +323,7 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 10,
     marginVertical: 6,
-    fontSize: 17,
+    fontSize: 12,
     justifyContent: "center",
     color: "#000",
     fontFamily: "Spartan_600SemiBold",
@@ -358,7 +363,7 @@ const styles = StyleSheet.create({
   },
   timeSlotText: {
     color: "#000",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
     fontFamily: "Spartan_600SemiBold",
   },

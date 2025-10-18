@@ -260,10 +260,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    marginBottom: 60,
   },
   headerText: {
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 12,
     fontFamily: "Spartan_800ExtraBold",
   },
   flexTop: {
@@ -275,14 +276,7 @@ const styles = StyleSheet.create({
     maxWidth: 265,
     minWidth: 265,
   },
-  flexStatus: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    marginTop: 35,
-    marginBottom: 30,
-  },
+
   statusText: {
     fontSize: 18,
     fontFamily: "Spartan_700Bold",
@@ -296,6 +290,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     marginVertical: 12,
     paddingHorizontal: 8,
+    paddingTop: 15,
   },
   filterBtn: {
     paddingVertical: 6,

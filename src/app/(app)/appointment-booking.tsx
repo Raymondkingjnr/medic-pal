@@ -20,6 +20,7 @@ import { supabase } from "@/lib/supabase";
 import Custombtn from "@/components/custombtn";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import { Status } from "@/constants/enum";
+import { Spartan_400Regular } from "@expo-google-fonts/spartan";
 
 const DoctorModal = () => {
   const router = useRouter();
@@ -266,7 +267,9 @@ const DoctorModal = () => {
                     );
                   })
                 ) : (
-                  <Text style={{ color: "#888" }}>
+                  <Text
+                    style={{ color: "#888", fontFamily: "Spartan_400Regular" }}
+                  >
                     No available working hours found
                   </Text>
                 )}
@@ -319,11 +322,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 10,
-    marginTop: 12,
+    marginTop: 20,
   },
   HeaderText: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 12,
     textAlign: "center",
     flex: 1,
     color: "#000",
@@ -332,7 +334,7 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: 10, marginTop: 30 },
   label: {
     fontFamily: "Spartan_700Bold",
-    fontSize: 15,
+    fontSize: 12,
     marginVertical: 5,
     color: "#000",
   },
@@ -343,7 +345,7 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 10,
     marginVertical: 6,
-    fontSize: 17,
+    fontSize: 12,
     justifyContent: "center",
     color: "#000",
     fontFamily: "Spartan_600SemiBold",

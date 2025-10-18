@@ -68,14 +68,14 @@ const styles = StyleSheet.create({
   btn: {
     backgroundColor: "#085be2",
     borderRadius: 20,
-    paddingVertical: 17,
+    paddingVertical: 14,
     marginVertical: 10,
   },
   Transbtn: {
     borderWidth: 1,
     borderColor: "#085be2",
     borderRadius: 20,
-    paddingVertical: 17,
+    paddingVertical: 14,
     marginVertical: 10,
   },
   textStyl: {

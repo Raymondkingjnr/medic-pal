@@ -68,7 +68,7 @@ const AppointmentCard: FC<appointmentProps> = ({
           <Text
             style={{
               fontFamily: "Spartan_700Bold",
-              fontSize: 12,
+              fontSize: 10,
               marginTop: 8,
               textTransform: "uppercase",
             }}
@@ -165,15 +165,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
   },
-  dateText: { fontFamily: "Spartan_700Bold", fontSize: 12, paddingTop: 10 },
+  dateText: { fontFamily: "Spartan_700Bold", fontSize: 10, paddingTop: 10 },
 
   docName: {
     fontFamily: "Spartan_800ExtraBold",
-    fontSize: 13,
+    fontSize: 12,
   },
   docSpec: {
     fontFamily: "Spartan_600SemiBold",
-    fontSize: 15,
+    fontSize: 12,
     paddingTop: 10,
     color: "#4B5563",
   },
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   docLoco: {
     paddingVertical: 10,
     color: "#888",
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "Spartan_600SemiBold",
   },
   docLocoText: {
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   cancelbtn: {
     width: "auto",
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 11,
   },
 
